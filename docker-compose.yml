@@ -1,0 +1,91 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Persistent storage for Postgres data
+      - ./db_backup.sql:/docker-entrypoint-initdb.d/db_backup.sql  # Load database backup
+      - ./db-backups:/backups  # Mount the db-backups directory into the container
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      retries: 5
+      timeout: 3s
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: vivin@spiderworks.in
+      PGADMIN_DEFAULT_USER: vivin
+      PGADMIN_DEFAULT_PASSWORD: scam
+      POSTGRES_DB: indus
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    environment:
+      NEXT_PUBLIC_API_BASE_PATH: ${NEXT_PUBLIC_API_BASE_PATH}
+      NEXT_PUBLIC_DOMAIN: ${NEXT_PUBLIC_DOMAIN}
+      NEXT_PUBLIC_RECAPTCHA_SITEKEY: ${NEXT_PUBLIC_RECAPTCHA_SITEKEY}
+      NEXT_PUBLIC_RECAPTCHA_SECRETKEY: ${NEXT_PUBLIC_RECAPTCHA_SECRETKEY}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_SSL: ${DATABASE_SSL}
+      JWT_SECRET: ${JWT_SECRET}
+      API_USERNAME: ${API_USERNAME}
+      API_PASSWORD: ${API_PASSWORD}
+      STRAPI_URL: ${STRAPI_URL}
+      BACKEND_URL: ${BACKEND_URL}
+    volumes:
+      - ./backend/public/uploads:/app/public/uploads  # Bind mount for persistent media storage
+    ports:
+      - "1337:1337"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  backup_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
