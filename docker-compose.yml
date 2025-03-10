@@ -84,7 +84,7 @@ services:
         condition: service_healthy  # Ensures backend is fully ready before frontend starts
     networks:
       - app-network
-    command: sh -c "until curl -s http://backend:1337/_health; do sleep 5; done && npm run build && npm start"
+    command: sh -c "until curl -s http://localhost:1337/api/static-page/getpages; do sleep 5; done && npm run build && npm start"
 
 volumes:
   postgres_data:
