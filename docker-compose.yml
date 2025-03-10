@@ -15,9 +15,9 @@ services:
       - app-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 5s
-      retries: 5
-      timeout: 3s
+      interval: 10s
+      retries: 10
+      timeout: 5s
 
   pgadmin:
     image: dpage/pgadmin4
@@ -36,22 +36,6 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
 
-  frontend:
-    build:
-      context: .
-      dockerfile: frontend/Dockerfile
-    environment:
-      NEXT_PUBLIC_API_BASE_PATH: ${NEXT_PUBLIC_API_BASE_PATH}
-      NEXT_PUBLIC_DOMAIN: ${NEXT_PUBLIC_DOMAIN}
-      NEXT_PUBLIC_RECAPTCHA_SITEKEY: ${NEXT_PUBLIC_RECAPTCHA_SITEKEY}
-      NEXT_PUBLIC_RECAPTCHA_SECRETKEY: ${NEXT_PUBLIC_RECAPTCHA_SECRETKEY}
-    ports:
-      - "3000:3000"
-    depends_on:
-      - postgres
-    networks:
-      - app-network
-
   backend:
     build:
       context: .
@@ -69,7 +53,7 @@ services:
       STRAPI_URL: ${STRAPI_URL}
       BACKEND_URL: ${BACKEND_URL}
     volumes:
-      - ./backend/public/uploads:/app/public/uploads  # Bind mount for persistent media storage
+      - ./backend/public/uploads:/app/public/uploads  # Persistent media storage
     ports:
       - "1337:1337"
     depends_on:
@@ -77,6 +61,30 @@ services:
         condition: service_healthy
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1337/_health"]
+      interval: 15s
+      retries: 10
+      timeout: 10s
+      start_period: 30s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    environment:
+      NEXT_PUBLIC_API_BASE_PATH: ${NEXT_PUBLIC_API_BASE_PATH}
+      NEXT_PUBLIC_DOMAIN: ${NEXT_PUBLIC_DOMAIN}
+      NEXT_PUBLIC_RECAPTCHA_SITEKEY: ${NEXT_PUBLIC_RECAPTCHA_SITEKEY}
+      NEXT_PUBLIC_RECAPTCHA_SECRETKEY: ${NEXT_PUBLIC_RECAPTCHA_SECRETKEY}
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy  # Ensures backend is fully ready before frontend starts
+    networks:
+      - app-network
+    command: sh -c "until curl -s http://backend:1337/_health; do sleep 5; done && npm run build && npm start"
 
 volumes:
   postgres_data:
