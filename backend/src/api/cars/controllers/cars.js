@@ -286,7 +286,7 @@ module.exports = {
       for (let car of cars) {
         console.log(car);
 
-        const slug = slugify(`${car.Name}-${car.documentId}`, {
+        const slug = slugify(`${car.Name}-${car.Vehicle_Reg_No}`, {
           replacement: "-",
           remove: undefined,
           lower: true,
@@ -305,7 +305,6 @@ module.exports = {
           data: {
             Slug: slug, // Use the generated slug here
           },
-          status:'published'
         });
         console.log("updated");
       }

@@ -14,7 +14,7 @@ const Choose = ({ data }) => {
 
   const settings = {
     dots: false,
-    arrows: true,
+    arrows: data?.length > 3 ? true : false,
     infinite: true,
     speed: 500,
     slidesToShow: 3,
@@ -24,6 +24,12 @@ const Choose = ({ data }) => {
     nextArrow: <button><SliderarrowIcon /></button>, // Custom next arrow
     prevArrow: <button><SliderarrowIcon /></button>, // Custom previous arrow
     responsive: [
+      {
+        breakpoint: 1920,
+        settings: {
+          centerPadding: "100px",
+        }
+      },
       {
         breakpoint: 1024,
         settings: {
@@ -36,7 +42,7 @@ const Choose = ({ data }) => {
       {
         breakpoint: 768,
         settings: {
-          slidesToShow: 1,
+          slidesToShow: 2,
           slidesToScroll: 1,
           centerMode: true, // Enable center mode
           centerPadding: "50px",
@@ -48,7 +54,7 @@ const Choose = ({ data }) => {
           slidesToShow: 1,
           slidesToScroll: 1,
           centerMode: true, // Enable center mode
-          centerPadding: "50px",
+          centerPadding: "20px",
         }
       }
     ]

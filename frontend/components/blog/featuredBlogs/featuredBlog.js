@@ -5,11 +5,9 @@ import FeaturedList from './featuredList'
 function FeaturedBlog({ data }) {
   const [blog, setBlog] =useState(0)
   const handleBlog = (id) => {
-    console.log("jjgfhh")
     setBlog(id)
   }
 const selectedBlog = data[blog]
-console.log("ajahvcs", selectedBlog)
   return (
     <section className='list-sec mt-[100px] md:mt-[140px] pb-[35px]'>
                 <div className='container relative'>

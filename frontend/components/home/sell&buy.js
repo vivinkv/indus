@@ -16,6 +16,8 @@ const SellBuy = ({ data }) => {
     }
 
 
+
+
     return (
         <>
 
@@ -24,7 +26,12 @@ const SellBuy = ({ data }) => {
 
             <div className='buy-sec'>
                 <div className='absolute right-[20px] top-[20px] z-[2] rounded-[50%] bg-white md:bg-transparent'>
-                    <a onClick={handleOpen} className='cursor-pointer'> <RightUparrowIcon /> </a>
+                    {
+                        data?.Button?.URL?.startsWith('http') ?
+                            <Link target='_blank' href={data?.Button?.URL} className='cursor-pointer link'> <RightUparrowIcon /> </Link>
+                            :
+                            <a onClick={handleOpen} className='cursor-pointer link'> <RightUparrowIcon /> </a>
+                    }
                 </div>
                 <Image src={ImageUrl(data?.Image?.url)} width={1000} height={100} alt='' />
                 <div className='buy-sec-cap absolute left-[30px] md:left-0 top-0 w-full h-full p-[25px] flex flex-col justify-center'>

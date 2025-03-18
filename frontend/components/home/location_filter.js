@@ -71,12 +71,12 @@ const LocationFilter = ({ locations, brands, fuel, price }) => {
               modules={[Navigation]} // Include Navigation module
               breakpoints={{
                 // When the viewport is >= 640px
-                390: {
-                  slidesPerView: 4,
+                360: {
+                  slidesPerView: 3.5,
                   spaceBetween: 10,
                 },
                 640: {
-                  slidesPerView: 4,
+                  slidesPerView: 3.5,
                   spaceBetween: 20,
                 },
                 // When the viewport is >= 768px
@@ -118,6 +118,27 @@ const LocationFilter = ({ locations, brands, fuel, price }) => {
                 autoplay={{ delay: 3000 }}
                 navigation={true} // Enable navigation
                 modules={[Navigation]} // Include Navigation module
+                breakpoints={{
+                  // When the viewport is >= 640px
+                  360: {
+                    slidesPerView: 3.3,
+                    spaceBetween: 10,
+                  },
+                  640: {
+                    slidesPerView: 3.3,
+                    spaceBetween: 20,
+                  },
+                  // When the viewport is >= 768px
+                  768: {
+                    slidesPerView: 4,
+                    spaceBetween: 30,
+                  },
+                  // When the viewport is >= 1024px
+                  992: {
+                    slidesPerView: 4,
+                    spaceBetween: 40,
+                  },
+                }}
               >
 
                 {
@@ -148,10 +169,11 @@ const LocationFilter = ({ locations, brands, fuel, price }) => {
                 fuel?.map((obj, index) => (
                   <Link key={index} href={`/cars?fuel=${obj?.Name}`}>
                     <div >
-                      <div className='fuel-list-item flex items-center justify-end'>
+                      <div className='fuel-list-item flex flex-col md:flex-row items-center justify-center md:justify-end'>
+                      <Image className='block md:hidden' src={ImageUrl(obj?.Image?.url)} width={100} height={100} alt='' />
                         <h5>{obj?.Name}</h5>
                         {/* <Image src={Fuel1} alt='' /> */}
-                        <Image src={ImageUrl(obj?.Image?.url)} width={100} height={100} alt='' />
+                        <Image className='hidden md:block' src={ImageUrl(obj?.Image?.url)} width={100} height={100} alt='' />
                       </div>
                     </div>
                   </Link>
@@ -164,12 +186,12 @@ const LocationFilter = ({ locations, brands, fuel, price }) => {
 
           <TabPanel>
 
-            <div className='flex items-center justify-between'>
-              <div className='w-[90%]'>
+            <div className='md:flex items-center justify-between'>
+              <div className='w-[100%] md:w-[90%]'>
 
-                <div className='rangeslide-price flex items-center justify-between'>
-                  <h5>{`${rsvalues[0]}`}</h5>
-                  <h5>{`${rsvalues[1]}`}</h5>
+                <div className='rangeslide-price hidden md:flex items-center justify-between'>
+                  <h5>{`${rsvalues[0]}`}rs</h5>
+                  <h5>{`${rsvalues[1]}`}rs</h5>
                 </div>
 
                 <div className="range-slider">
@@ -216,6 +238,13 @@ const LocationFilter = ({ locations, brands, fuel, price }) => {
 
 
                 </div>
+
+
+                <div className='rangeslide-price flex md:hidden mt-[35px] items-center justify-between w-[80%] md:w-full'>
+                  <h5> ₹ {`${rsvalues[0]}`}</h5>
+                  <h5>  ₹ {`${rsvalues[1]}`}</h5>
+                </div>
+
 
 
               </div>

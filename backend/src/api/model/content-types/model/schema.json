@@ -47,6 +47,9 @@
       },
       "customField": "plugin::ckeditor5.CKEditor"
     },
+    "Related_Type": {
+      "type": "string"
+    },
     "Extra_JS": {
       "type": "customField",
       "options": {

@@ -4,7 +4,6 @@ import banner from '../../public/banner.png';
 import { ImageUrl } from '@/Common/image-url';
 
 const Banner = ({data}) => { 
-    console.log(data)
     return (
        <section className='banner-sec'>
             <div className='container relative'>

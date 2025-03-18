@@ -48,7 +48,7 @@ const EnquiryModal = ({ open, setOpen, title, book }) => {
             name: details?.name,
             phone_number: details?.phone,
             city: details?.location,
-            lead_type: book?'Book':'Sell',
+            lead_type: book?'Home_Book':'Sell',
             recaptcha_token: token,
             source_url:pageUrl
         };

@@ -1,10 +1,8 @@
-
-import Image from 'next/image';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Range, getTrackBackground } from 'react-range';
 import debounce from 'lodash.debounce';
 
-import { FiltCalenderrIcon, FiltCarIcon, FiltKmIcon, PriceIcon, PricetagIcon, PumbIcon, Search2Icon, SearchIcon } from '../Common/svgicons';
+import { FiltCalenderrIcon, FiltCarIcon, FiltKmIcon, PriceIcon, PricetagIcon, PumbIcon, Search2Icon } from '../Common/svgicons';
 
 
 import {
@@ -18,7 +16,6 @@ import {
 // Demo styles, see 'Styles' section below for some notes on use.
 import 'react-accessible-accordion/dist/fancy-example.css';
 import { FilterApi } from '@/Datas/Endpoints/filters';
-import { useDebounce } from '@/Common/debouncer';
 import { useRouter } from 'next/router';
 import { ScrollToTop } from '@/Common/scroll';
 
@@ -155,7 +152,7 @@ const Filter = ({
 
     const fetchBrands = async (e) => {
         const response = await FilterApi.brands({ search: searchBrand })
-        console.log(response);
+        // console.log(response);
         setbrandsFilter(response?.data?.data)
         setbrandLoading(false)
     }
@@ -185,9 +182,10 @@ const Filter = ({
 
     const [modeldFilter, setModelFilter] = useState(models)
 
-    const fetchModels = async (e) => {
-        const response = await FilterApi.models({ search: searchModel })
-        console.log(response);
+    // model_select
+    const fetchModels = async () => {
+        const response = await FilterApi.models({ search: searchModel, brand: `[${selectedBrands?.join(',')}]` })
+        // console.log(response);
         setModelFilter(response?.data?.data)
         setModelLoading(false)
     }
@@ -201,6 +199,11 @@ const Filter = ({
         }
     }, [searchModel])
 
+    // model_select
+    useEffect(() => {
+        fetchModels()
+        setsearchModel()
+    }, [selectedBrands])
 
 
     return (
@@ -284,11 +287,13 @@ const Filter = ({
                     <hr />
 
 
-                    <Accordion allowZeroExpanded preExpanded={[activeItem]}>
+                    {/* allowZeroExpanded preExpanded={[activeItem]} */}
+                    <Accordion allowMultipleExpanded  >
                         <AccordionItem uuid="a">
 
                             <AccordionItemHeading>
-                                <AccordionItemButton onClick={() => handleAccordionClick("a")}>
+                                {/* onClick={() => handleAccordionClick("a")} */}
+                                <AccordionItemButton >
                                     <div className='flex items-center gap-[8px]'>
                                         <FiltCarIcon />  Brands
                                     </div>
@@ -328,10 +333,12 @@ const Filter = ({
                                 </div>
                             </AccordionItemPanel>
                         </AccordionItem>
+
                         <AccordionItem uuid="f">
 
+                            {/* onClick={() => handleAccordionClick("f")} */}
                             <AccordionItemHeading>
-                                <AccordionItemButton onClick={() => handleAccordionClick("a")}>
+                                <AccordionItemButton >
                                     <div className='flex items-center gap-[8px]'>
                                         <FiltCarIcon />  Models
                                     </div>
@@ -342,31 +349,47 @@ const Filter = ({
 
 
                                     <div className='relative filter-search'>
-                                        <input onChange={handleModelSearch} type='text ' placeholder='Search ' />
+                                        {/* disabled={selectedBrands?.length == 0} */}
+                                        <input key={searchModel} value={searchModel} onChange={handleModelSearch} type='text ' placeholder='Search ' />
                                         <button> <Search2Icon /> </button>
                                     </div>
 
-                                    <span>All Models</span>
+                                    <span>
+                                        All Models
+                                        {/* {
+                                            selectedBrands?.length > 0 ?
+                                                'All Models'
+                                                :
+                                                'Please select a Brand'
+                                        } */}
+
+                                    </span>
 
                                     {
                                         modelLoading ?
                                             <div className='flex justify-center items-center'><span style={{ fontSize: '5px' }} className="loader"></span></div>
                                             :
+                                            // selectedBrands?.length > 0 &&
+                                            modeldFilter?.length > 0 &&
                                             modeldFilter?.map((obj, index) => (
                                                 <div key={index} className='checkbox'>
+
                                                     <label>
+                                                        {/* || selectedBrands?.length == 0 */}
                                                         <input
                                                             disabled={loading}
                                                             type="checkbox"
                                                             name={obj?.Slug}
                                                             value={obj?.Name}
-                                                            onChange={handleModelCheck}
+                                                            onChange={(e) => handleModelCheck(e, obj)}
                                                             checked={selectedModels.includes(obj?.Name?.toString())}
                                                         />
                                                         {obj?.Name}
                                                     </label>
                                                 </div>
                                             ))
+                                        // :
+                                        // <div className='text-[#050B20] flex justify-center items-center text-[15px]'> Please select a brand </div>
                                     }
                                 </div>
                             </AccordionItemPanel>
@@ -375,7 +398,8 @@ const Filter = ({
 
                         <AccordionItem uuid="b">
                             <AccordionItemHeading>
-                                <AccordionItemButton onClick={() => handleAccordionClick("b")}>
+                                {/* onClick={() => handleAccordionClick("b")} */}
+                                <AccordionItemButton >
 
                                     <div className='flex items-center gap-[8px]'>
                                         <FiltCalenderrIcon /> Model Year
@@ -389,8 +413,8 @@ const Filter = ({
                                     <div style={{}}>
                                         {/* Labels above the slider */}
                                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '25px' }}>
-                                            <div style={{ fontWeight: 'bold' }}>{` ${values1[0]}`}</div>
-                                            <div style={{ fontWeight: 'bold' }}>{` ${values1[1]}`}</div>
+                                            <div className=' text-[#050B20]' style={{ fontWeight: 'bold' }}>{` ${values1[0]}`}</div>
+                                            <div className=' text-[#050B20]' style={{ fontWeight: 'bold' }}>{` ${values1[1]}`}</div>
                                         </div>
 
                                         <Range
@@ -447,7 +471,8 @@ const Filter = ({
 
                         <AccordionItem uuid="c">
                             <AccordionItemHeading>
-                                <AccordionItemButton onClick={() => handleAccordionClick("c")}>
+                                {/* onClick={() => handleAccordionClick("c")} */}
+                                <AccordionItemButton >
                                     <div className='flex items-center gap-[8px]'>
                                         <FiltKmIcon /> Kilometers Driven
                                     </div>
@@ -460,8 +485,8 @@ const Filter = ({
                                     <div style={{}}>
                                         {/* Labels above the slider */}
                                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '25px' }}>
-                                            <div style={{ fontWeight: 'bold' }}>{` ${kmvalues1[0].toLocaleString()}`}</div>
-                                            <div style={{ fontWeight: 'bold' }}>{` ${kmvalues1[1].toLocaleString()}`}</div>
+                                            <div className=' text-[#050B20]' style={{ fontWeight: 'bold' }}>{` ${kmvalues1[0].toLocaleString()} KM`}</div>
+                                            <div className=' text-[#050B20]' style={{ fontWeight: 'bold' }}>{` ${kmvalues1[1].toLocaleString()} KM`}</div>
                                         </div>
 
                                         <Range
@@ -518,7 +543,8 @@ const Filter = ({
 
 
                         <AccordionItem uuid="d">
-                            <AccordionItemHeading onClick={() => handleAccordionClick("d")}>
+                            {/* onClick={() => handleAccordionClick("d")} */}
+                            <AccordionItemHeading >
                                 <AccordionItemButton>
                                     <div className='flex items-center gap-[8px]'>
                                         <PumbIcon />  Fuel Type
@@ -550,7 +576,8 @@ const Filter = ({
                         </AccordionItem>
 
                         <AccordionItem uuid="e">
-                            <AccordionItemHeading onClick={() => handleAccordionClick("d")}>
+                            {/* onClick={() => handleAccordionClick("d")} */}
+                            <AccordionItemHeading >
                                 <AccordionItemButton>
                                     <div className='flex items-center gap-[8px]'>
                                         <FiltCalenderrIcon /> Transmission

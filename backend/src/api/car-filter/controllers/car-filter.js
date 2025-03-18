@@ -257,7 +257,7 @@ module.exports = {
   },
   searchModel: async (ctx, next) => {
     try {
-      const { search, page = 1, limit = 10,brand } = ctx.query;
+      const { search, page = 1, limit = 10, brand } = ctx.query;
       const pagination = {
         page: parseInt(page),
         pageSize: parseInt(limit),
@@ -265,46 +265,56 @@ module.exports = {
         limit: parseInt(limit),
       };
 
-      if(brand){
-        const [models,count]=await Promise.all([strapi.documents('api::model.model').findFirst({
-          filters:{
-            Brand:{
-              Slug:{
-                $eq:brand
-              }
-            }
-          },
-          pagination:{
-            page:page,
-            pageSize:limit,
-          },
-          populate:['Brand']
-        }),strapi.documents('api::model.model').count({
-          filters:{
-            Brand:{
-              Slug:{
-                $eq:brand
-              }
-            }
-          },
-          populate:['Brand']
-        })]);
+      if(brand && brand !== '[]') {
+        try {
+          // Remove brackets and split by comma
+          const cleanedBrand = brand.replace(/[\[\]{}]/g, "");
+          const brandArray = cleanedBrand.split(",").map(b => b.trim());
 
+          if (brandArray.length > 0 && brandArray[0] !== '') {
+            console.log(
+              'yes'
+            );
+            
+            const [models, count] = await Promise.all([
+              strapi.documents('api::model.model').findMany({
+                filters: {
+                  Brand: {
+                    Name: {
+                      $in: brandArray
+                    }
+                  }
+                },
+                limit: pagination.limit,
+                start: pagination.start,
+                populate: ['Brand']
+              }),
+              strapi.documents('api::model.model').count({
+                filters: {
+                  Brand: {
+                    Name: {
+                      $in: brandArray
+                    }
+                  }
+                }
+              })
+            ]);
 
-
-        ctx.status = 200;
-        ctx.body = {
-          data: models || [],
-          meta: {
-            page: pagination.page,
-            pageSize: pagination.pageSize,
-            totalPage: Math.ceil(count / pagination.limit),
-            pageCount: count || 0,
-          },
-        };
-
-        return
-
+            ctx.status = 200;
+            ctx.body = {
+              data: models || [],
+              meta: {
+                page: pagination.page,
+                pageSize: pagination.pageSize,
+                totalPage: Math.ceil(count / pagination.limit),
+                pageCount: count || 0,
+              },
+            };
+            return;
+          }
+        } catch (error) {
+          console.error("Error parsing brand filter:", error);
+        }
       }
 
       let count = await strapi.documents("api::model.model").count();
@@ -339,6 +349,7 @@ module.exports = {
         },
         limit: pagination.limit,
         start: pagination.start,
+        populate:['Brand']
       });
       count = await strapi.documents("api::model.model").count({
         filters: {
@@ -473,8 +484,11 @@ module.exports = {
 
       // Add location filter based on slug
       if (location) {
-        filters.Location = {
-          Slug: location,
+        filters.Outlet = {
+          Location:{
+            Slug: location,
+          }
+          
         };
       }
 

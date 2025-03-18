@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Slider from "react-slick";
 
 
-import sh1 from '../../public/sh1.png';
+import shPlaceholder from '../../public/showroom-paceholder.webp';
 import sh2 from '../../public/sh2.png';
 import sh3 from '../../public/sh3.png';
 import sh4 from '../../public/sh4.png';
@@ -12,6 +12,7 @@ import sh4 from '../../public/sh4.png';
 
 import { SliderarrowIcon, ViewarrowIcon } from '../Common/svgicons';
 import { ImageUrl } from '@/Common/image-url';
+import Link from 'next/link';
 
 
 const Showroom = ({ data }) => {
@@ -46,7 +47,7 @@ const Showroom = ({ data }) => {
           slidesToShow: 1,
           slidesToScroll: 1,
           centerMode: true, // Enable center mode
-          centerPadding: "80px",
+          centerPadding: "65px",
         }
       }
     ]
@@ -84,7 +85,7 @@ const Showroom = ({ data }) => {
                 <div key={index}>
                   <div className='show_list' style={{ backgroundColor: backgroundColor(index) }}>
                     <h5>{obj?.Name}</h5>
-                    <Image src={ImageUrl(obj?.Image?.url)} alt='' width={138} height={125} />
+                    <Image src={obj?.Image?.url ? ImageUrl(obj?.Image?.url) : shPlaceholder} alt='' width={138} height={125} />
                     <h4>{Math.floor(obj?.carCount / 10) * 10}+ Cars</h4>
                   </div>
                 </div>
@@ -97,7 +98,7 @@ const Showroom = ({ data }) => {
         </div>
 
 
-        <a className='btn'> View All </a>
+        <Link href='/dealers' className='btn'> View All </Link>
 
       </div>
 

@@ -11,25 +11,8 @@ import { HomeApi } from '@/Datas/Endpoints/Home'
 import BlogDetail from '@/components/blogDetail/blogDetail'
 import { BlogApi } from '@/Datas/Endpoints/blog'
 
-function BlogDetailPage({ data, menu, widget, cta, blog }) {
-    const testBlogs = [
-        {
-            title: "Title for blog 1 ",
-            image: car1,
-            description: "kjhkudfgdfzxgchvjknjbhvgcfxdxfcgvhbj,bhvgcfvcbnm,bv",
-        },
-        {
-            title: "Title for blog 2",
-            image: car2,
-            description: "Description for blog 2",
-        },
-        {
-            title: "Title for blog 3",
-            image: testImage,
-            description: "Description for blog 3",
-        }
-    ]
-    const otherBlogs = blog.slice(0, 3);
+function BlogDetailPage({ data, menu, cta }) {
+    
     return (
 
         <Base menu={menu} meta={data?.data?.SEO} bottomDescription={data?.data?.Bottom_Description}  >
@@ -65,16 +48,13 @@ export const getStaticProps = async ({ params }) => {
     try {
         const data = await BlogApi.getBlogBySlug({ slug: params.slug })
         const menu = await MenuApi.menu(Params)
-        const widget = await HomeApi.index()
         const cta = await widgetsApi.cta()
-        const blog = await BlogApi.getBlogs()
+       
         return {
             props: {
                 data: data?.data,
                 menu: menu?.data?.data,
                 cta: cta?.data,
-                widget: widget?.data,
-                blog: blog?.data?.data
             },
             revalidate: 10,
 

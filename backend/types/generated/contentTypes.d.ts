@@ -750,6 +750,122 @@ export interface ApiContactFormUiContactFormUi extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiContactContact extends Struct.SingleTypeSchema {
+  collectionName: 'contacts';
+  info: {
+    description: '';
+    displayName: 'Contact Page';
+    pluralName: 'contacts';
+    singularName: 'contact';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::contact.contact'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    SEO: Schema.Attribute.Component<'shared.seo', false>;
+    Title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiDealerListDealerList extends Struct.CollectionTypeSchema {
+  collectionName: 'dealer_lists';
+  info: {
+    description: '';
+    displayName: 'Dealer List';
+    pluralName: 'dealer-lists';
+    singularName: 'dealer-list';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Additional: Schema.Attribute.Component<'dealer.additional-details', false>;
+    Bottom_Description: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Dealer_Detail: Schema.Attribute.Component<'dealer.dealer', false>;
+    FAQ: Schema.Attribute.Component<'common.faq', false>;
+    Head: Schema.Attribute.Component<'dealer.head', false>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::dealer-list.dealer-list'
+    > &
+      Schema.Attribute.Private;
+    Location: Schema.Attribute.Relation<'oneToOne', 'api::location.location'>;
+    Manager: Schema.Attribute.Component<'dealer.manager', false>;
+    Outlet: Schema.Attribute.Relation<'oneToOne', 'api::outlet.outlet'>;
+    Page_Heading: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    Related_Type: Schema.Attribute.String;
+    SEO: Schema.Attribute.Component<'shared.seo', false>;
+    Slug: Schema.Attribute.UID;
+    Top_Description: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiDealerDealer extends Struct.SingleTypeSchema {
+  collectionName: 'dealers';
+  info: {
+    description: '';
+    displayName: 'Dealer Page';
+    pluralName: 'dealers';
+    singularName: 'dealer';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::dealer.dealer'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    SEO: Schema.Attribute.Component<'shared.seo', false>;
+    Short_Title: Schema.Attribute.String;
+    Title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiFuelTypeFuelType extends Struct.CollectionTypeSchema {
   collectionName: 'fuel_types';
   info: {
@@ -796,6 +912,7 @@ export interface ApiGeneralGeneral extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    Badge: Schema.Attribute.Media<'images' | 'files'>;
     Contact: Schema.Attribute.Component<'settings.contact', false>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1024,6 +1141,7 @@ export interface ApiModelModel extends Struct.CollectionTypeSchema {
     Name: Schema.Attribute.String & Schema.Attribute.Required;
     Page_Heading: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    Related_Type: Schema.Attribute.String;
     SEO: Schema.Attribute.Component<'shared.seo', false>;
     Slug: Schema.Attribute.UID<'Name'>;
     Top_Description: Schema.Attribute.RichText &
@@ -1066,6 +1184,37 @@ export interface ApiOutletOutlet extends Struct.CollectionTypeSchema {
     Name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     Slug: Schema.Attribute.UID<'Name'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiRedirectionRedirection extends Struct.CollectionTypeSchema {
+  collectionName: 'redirections';
+  info: {
+    description: '';
+    displayName: '301 Redirects';
+    pluralName: 'redirections';
+    singularName: 'redirection';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Destination_URL: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::redirection.redirection'
+    > &
+      Schema.Attribute.Private;
+    Permanent: Schema.Attribute.Boolean;
+    publishedAt: Schema.Attribute.DateTime;
+    Source_URL: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1759,6 +1908,9 @@ declare module '@strapi/strapi' {
       'api::cars-listing.cars-listing': ApiCarsListingCarsListing;
       'api::combination-page.combination-page': ApiCombinationPageCombinationPage;
       'api::contact-form-ui.contact-form-ui': ApiContactFormUiContactFormUi;
+      'api::contact.contact': ApiContactContact;
+      'api::dealer-list.dealer-list': ApiDealerListDealerList;
+      'api::dealer.dealer': ApiDealerDealer;
       'api::fuel-type.fuel-type': ApiFuelTypeFuelType;
       'api::general.general': ApiGeneralGeneral;
       'api::home.home': ApiHomeHome;
@@ -1767,6 +1919,7 @@ declare module '@strapi/strapi' {
       'api::menu.menu': ApiMenuMenu;
       'api::model.model': ApiModelModel;
       'api::outlet.outlet': ApiOutletOutlet;
+      'api::redirection.redirection': ApiRedirectionRedirection;
       'api::response-page.response-page': ApiResponsePageResponsePage;
       'api::static-page.static-page': ApiStaticPageStaticPage;
       'api::testimonial.testimonial': ApiTestimonialTestimonial;

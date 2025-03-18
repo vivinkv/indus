@@ -15,7 +15,7 @@ import { CarsApi } from "@/Datas/Endpoints/Cars";
 
 
 
-export default function CombinationCars({ menu, filters, brands, cta, formContent, outlets, carList, carData }) {
+export default function CombinationCars({ menu, filters, brands, cta, formContent, outlets, carList, carData,models }) {
 
     const slug = carData?.Slug
     const cleanSlug = slug?.startsWith("used-") ? slug.replace("used-", "") : slug;
@@ -28,7 +28,7 @@ export default function CombinationCars({ menu, filters, brands, cta, formConten
 
     return (
         <Base menu={menu} meta={carData?.SEO} bottomDescription={data?.data?.Bottom_Description}  >
-            <List data={data} filters={filters?.data} brands={brands?.data} carList={carList} isCombination={true} combinationBrand={carData?.Brand?.Name} />
+            <List data={data} filters={filters?.data} brands={brands?.data} carList={carList} isCombination={true} combinationBrand={carData?.Brand?.Name} models={models?.data} />
             <Showroom data={outlets?.data} />
 
             <Book data={formContent?.data} />
@@ -61,14 +61,13 @@ export async function getStaticProps({ params }) {
         const menu = await MenuApi.menu(Params)
         const filters = await FilterApi.filters(Params)
         const brands = await FilterApi.brands()
+        const models = await FilterApi.models()
         const cta = await widgetsApi.cta()
         const formContent = await ContactApi.excellenceForm()
         const outlets = await HomeApi.outlets({ location: '', pageSize: 6 })
         const data = await FilterApi.locationData()
         const carData = await CarsApi.combinationData(params?.slug)
         const carList = await CarsApi.combinationList(params?.slug)
-
-        console.log("first",carList?.data)
 
         return {
             props: {
@@ -80,7 +79,8 @@ export async function getStaticProps({ params }) {
                 outlets: outlets?.data,
                 content: data?.data,
                 carData: carData?.data,
-                carList: carList?.data
+                carList: carList?.data,
+                models:models?.data
             },
             revalidate: 10,
         };

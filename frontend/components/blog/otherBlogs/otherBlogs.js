@@ -47,32 +47,36 @@ function OtherBlogs({ data, sectionHeading }) {
                 alt=""
                 className="w-full object-cover h-[150px] md:h-[200px] lg:h-[300px]  rounded-[8px]"
               />
-              <p className="text-[14px] mt-[5px] text-stone-400">{moment(data?.createdAt).format("DD MMMM YYYY")}</p>
+              <p className="text-[14px] mt-[5px] text-stone-400">{moment(data?.publishedAt).format("DD MMMM YYYY")}</p>
               <h4 className="text-[24px]  text-black mt-[10px] leading-[28px]">
                 {data?.Title}
               </h4>
 
-              <p
-                dangerouslySetInnerHTML={{
-                  __html: data?.Content ? (data.Content.length > 130 ? `${data.Content.slice(0, 130) + "..."}` : data.Content) : ''
-                }}
-                className=" text-[18px] leading-[35px] text-stone-400 mt-[10px]"
-              />
+              <p className=" text-[18px] leading-[35px] text-stone-400 mt-[10px]">
+                {data?.Short_Description}
+              </p>
 
             </Link>
           ))}
       </div>
       {
         meta?.pagination?.lastPage != meta?.pagination?.current_page &&
-        <div className="w-full flex justify-center mt-[50px] items-center">
-          <button disabled={loading} onClick={handleLoadMore} className="load-more-btn">
-            {
-              loading ?
-                <div className='flex justify-center items-center'><span className="loader"></span></div>
-                :
-                'Load More'
-            }
-          </button>
+        <div className='flex items-center justify-center mt-[40px] cursor-pointer'>
+          <a
+            onClick={handleLoadMore}
+            className='loadmore-btn flex items-center justify-center gap-[13px]'
+          >
+            {loading ? (
+              <div className='flex justify-center items-center'>
+                <span className='loader'></span>
+              </div>
+            ) : (
+              <>
+                {' '}
+                Load More
+              </>
+            )}
+          </a>
         </div>
       }
     </div>

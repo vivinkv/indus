@@ -42,14 +42,12 @@ module.exports = {
       ctx.status = 200;
       ctx.body = { data: blog };
     } catch (err) {
-      ctx.status=500
       ctx.body = err;
     }
   },
   fetchBlog: async (ctx, next) => {
     try {
       console.log("blog running");
-      
       // Helper function to upload image using Strapi's upload API
       const uploadImage = async (filePath) => {
         try {
@@ -103,10 +101,8 @@ module.exports = {
         failedUploads.push({ filePath, slug: blog?.slug });
         return null;
       };
-
       const blogsCount = await axios.get(`https://indususedcars.com/api/pages`);
       let blogList;
-      
       for (let i = 1; i <= blogsCount?.data?.last_page; i++) {
         blogList = await axios.get(
           `https://indususedcars.com/api/pages?page=${i}`
@@ -122,35 +118,35 @@ module.exports = {
                 },
                 populate: ['Featured_Image', 'Banner_Image', 'SEO.Meta_Image']
               });
-
-            const blogDetail = (
-              await axios.get(
-                `https://indususedcars.com/api/pages/${blog?.slug}`
-              )
-            ).data;
-
-            // Upload images regardless of whether blog exists
-            const featuredImageId = await uploadWithRetry(
-              blogDetail?.featured_image?.file_path,
-              blog
-            );
-            const bannerImageId = await uploadWithRetry(
-              blogDetail?.banner_image?.file_path,
-              blog
-            );
-            const metaImageId = await uploadWithRetry(
-              blogDetail?.og_image?.file_path,
-              blog
-            );
-
-            // Truncate long text fields to 255 characters
-            const truncate = (str, maxLength = 255) =>
-              str && str.length > maxLength
-                ? str.substring(0, maxLength)
-                : str;
-
             if (!findBlog) {
-              // Create new blog
+              console.log("yes");
+
+              const blogDetail = (
+                await axios.get(
+                  `https://indususedcars.com/api/pages/${blog?.slug}`
+                )
+              ).data;
+
+              const featuredImageId = await uploadWithRetry(
+                blogDetail?.featured_image?.file_path
+                , blog
+              );
+              const bannerImageId = await uploadWithRetry(
+                blogDetail?.banner_image?.file_path
+                , blog
+              );
+              const metaImageId = await uploadWithRetry(
+                blogDetail?.og_image?.file_path
+                , blog
+              );
+
+              // Truncate long text fields to 255 characters
+              const truncate = (str, maxLength = 255) =>
+                str && str.length > maxLength
+                  ? str.substring(0, maxLength)
+                  : str;
+
+              // Create blog data
               const blogData = {
                 Title: truncate(blogDetail?.name),
                 Slug: truncate(blogDetail?.slug),
@@ -159,7 +155,9 @@ module.exports = {
                 Content: blogDetail?.content || "",
                 Top_Description: blogDetail?.top_description || "",
                 Bottom_Description: blogDetail?.bottom_description || "",
-                Featured_Image: featuredImageId ? { id: featuredImageId } : null,
+                Featured_Image: featuredImageId
+                  ? { id: featuredImageId }
+                  : null,
                 Banner_Image: bannerImageId ? { id: bannerImageId } : null,
                 SEO: {
                   Meta_Title: truncate(blogDetail?.browser_title),
@@ -185,6 +183,7 @@ module.exports = {
                 publishedAt: blogDetail?.created_at || new Date(),
               };
 
+              // Create and publish the blog
               try {
                 const createdBlog = await strapi
                   .documents("api::blog.blog")
@@ -207,32 +206,129 @@ module.exports = {
                 });
               } catch (error) {
                 console.error("Error creating blog:", error);
-                continue;
+                continue; // Skip to next blog on any error
               }
             } else {
-              // Update existing blog
-              const updateData = {
-                Featured_Image: featuredImageId ? { id: featuredImageId } : findBlog.Featured_Image,
-                Banner_Image: bannerImageId ? { id: bannerImageId } : findBlog.Banner_Image,
-                SEO: {
-                  ...findBlog.SEO,
-                  Meta_Image: metaImageId ? { id: metaImageId } : findBlog.SEO?.Meta_Image
-                },
-                publishedAt: blogDetail?.published_at,
-                createdAt: blogDetail?.created_at
-              };
+              console.log(findBlog);
 
-              try {
-                const updatedBlog = await strapi.documents("api::blog.blog").update({
-                  documentId: findBlog.documentId,
-                  data: updateData,
-                  status: 'published'
-                });
-                console.log({ updatedBlog });
-              } catch (error) {
-                console.error("Error updating blog:", error);
-                continue;
+              // Check and update images if needed 
+              const updateData = {};
+
+              // Check and handle Featured_Image
+              if (!findBlog.Featured_Image) {
+                console.log('yes');
+                console.log(blog?.featured_image?.file_path);
+
+
+                const blogDetail = (
+                  await axios.get(
+                    `https://indususedcars.com/api/pages/${blog?.slug}`
+                  )
+                ).data;
+
+                const featuredImageId = await uploadWithRetry(
+                  blogDetail?.featured_image?.file_path
+                  , blog
+                );
+                console.log({ featuredImageId, id: blogDetail?.id });
+
+                if (featuredImageId) {
+                  console.log('yes insider');
+
+                  updateData.Featured_Image = { id: featuredImageId };
+                }
+                console.log('end');
+
               }
+
+              // Check and handle Banner_Image
+              if (!findBlog.Banner_Image) {
+                console.log('yes');
+                console.log(blog?.banner_image?.file_path);
+
+                const blogDetail = (
+                  await axios.get(
+                    `https://indususedcars.com/api/pages/${blog?.slug}`
+                  )
+                ).data;
+
+                const bannerImageId = await uploadWithRetry(
+                  blogDetail?.banner_image?.file_path
+                  , blog
+                );
+                console.log(bannerImageId);
+
+
+                if (bannerImageId) {
+                  console.log('yes insider');
+                  updateData.Banner_Image = { id: bannerImageId };
+                }
+                console.log('end');
+              }
+
+              // Check and handle SEO.Meta_Image
+              if (!findBlog.SEO?.Meta_Image) {
+
+                console.log(blog?.og_image?.file_path);
+                const blogDetail = (
+                  await axios.get(
+                    `https://indususedcars.com/api/pages/${blog?.slug}`
+                  )
+                ).data;
+                const metaImageId = await uploadWithRetry(
+                  blogDetail?.og_image?.file_path
+                  , blog
+                );
+                console.log(metaImageId);
+
+                if (metaImageId) {
+
+                  updateData.SEO = {
+                    ...findBlog.SEO,
+                    Meta_Image: { id: metaImageId }
+                  };
+                }
+
+              }
+
+              // Update blog if any images were missing
+              console.log(Object.keys(updateData).length > 0, Object.keys(updateData));
+
+              if (Object.keys(updateData).length > 0) {
+                try {
+                  const updatedBlog = await strapi.documents("api::blog.blog").update({
+                    documentId: findBlog.documentId,
+                    data: updateData,
+                    status: 'published'
+                  });
+                  console.log({ updatedBlog });
+                } catch (error) {
+                  console.error("Error updating blog:", error);
+                  continue; // Skip to next blog on any error
+                }
+              }
+
+              //update blog date
+              const blogDetail = (
+                await axios.get(
+                  `https://indususedcars.com/api/pages/${blog?.slug}`
+                )
+              ).data;
+
+              await strapi.documents('api::blog.blog').update({
+                documentId: findBlog.documentId,
+                data: {
+                  publishedAt: blogDetail?.published_at,
+                  createdAt: blogDetail?.created_at
+                },
+                status: 'published'
+              })
+
+
+
+
+
+              console.log("done");
             }
           }
         }
@@ -271,7 +367,7 @@ module.exports = {
 
       // Fetch paginated results
       const results = await strapi.documents("api::blog.blog").findMany({
-        start: Number(start),
+        start: (Number(start)-1)*Number(limit),
         limit: Number(limit),
         status: "published",
         populate: {

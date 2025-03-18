@@ -62,11 +62,11 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:1337/_health"]
-      interval: 15s
-      retries: 10
-      timeout: 10s
-      start_period: 30s
+      test: ["CMD", "curl", "-f", "http://localhost:1337/health"]
+      interval: 30s      # Increased from 15s to 30s
+      timeout: 30s       # Increased from 10s to 30s
+      retries: 10        # Keeping 10 retries
+      start_period: 300s # Increased from 30s to 300s (5 minutes)
 
   frontend:
     build:
@@ -81,10 +81,19 @@ services:
       - "3000:3000"
     depends_on:
       backend:
-        condition: service_healthy  # Ensures backend is fully ready before frontend starts
+        condition: service_healthy
+    command: >
+      sh -c '
+        echo "Waiting for backend to be ready..."
+        while ! curl -s http://backend:1337/health; do
+          echo "Backend not ready - waiting..."
+          sleep 10
+        done
+        echo "Backend is ready - starting frontend build..."
+        npm run build && npm start
+      '
     networks:
       - app-network
-    command: sh -c "until curl -s http://localhost:1337/api/static-page/getpages; do sleep 5; done && npm run build && npm start"
 
 volumes:
   postgres_data:

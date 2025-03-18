@@ -479,11 +479,8 @@ module.exports = {
                 Brand: {
                   Slug: fetchPage?.Brand?.Slug
                 },
-                Outlet: {
-                  Location: {
-                    Slug: fetchPage?.Location?.Slug
-                  }
-
+                Location: {
+                  Slug: fetchPage?.Location?.Slug
                 }
               },
               start: (page - 1) * limit,
@@ -494,12 +491,6 @@ module.exports = {
                 },
                 Brand: {
                   populate: '*'
-                },
-                Outlet: {
-                  Location: {
-                    populate: '*'
-
-                  }
                 },
                 Location: {
                   populate: '*'
@@ -515,22 +506,11 @@ module.exports = {
                 Brand: {
                   Slug: fetchPage?.Brand?.Slug
                 },
-                Outlet: {
-                  Location: {
-                    Slug: fetchPage?.Location?.Slug
-                  }
+                Location: {
+                  Slug: fetchPage?.Location?.Slug
                 }
               },
-              populate: {
-                Brand: {
-                  populate: '*'
-                },
-                Outlet: {
-                  Location: {
-                    populate: '*'
-                  }
-                }
-              }
+              populate: ['Brand']
             })])
 
             console.log({ data3, count3 });
@@ -604,82 +584,9 @@ module.exports = {
           else if (fetchPage?.Brand == null && fetchPage?.Location != null) {
             const [data3, count3] = await Promise.all([strapi.documents('api::car.car').findMany({
               filters: {
-                Outlet: {
-                  Location: {
-                    Slug: fetchPage?.Location?.Slug
-                  }
-                }
-              },
-              start: (page - 1) * limit,
-              limit: limit,
-              populate: {
-                Outlet: {
-                  Location: {
-                    populate: '*'
-                  }
-                },
-                Brand: {
-                  populate: '*'
-                },
                 Location: {
-                  populate: '*'
+                  Slug: fetchPage?.Location?.Slug
                 },
-                Fuel_Type: {
-                  populate: '*',
-                },
-
-
-              }
-            }), strapi.documents("api::car.car").count({
-              filters: {
-                Outlet: {
-                  Location: {
-                    Slug: fetchPage?.Location?.Slug
-                  }
-                }
-              },
-              populate: {
-                Outlet: {
-                  Location: {
-                    populate: '*'
-                  }
-                }
-              }
-            })])
-
-            console.log({ data3, count3 });
-
-
-            ctx.status = 200;
-            ctx.body = {
-              data: data3, meta: {
-                pagination: {
-                  total: count3,
-                  page: page,
-                  pageSize: limit,
-                  pageCount: Math.ceil(data3.length / limit),
-                  last_page: Math.ceil(data3.length / limit),
-                }
-
-              }
-            }
-          }
-
-
-
-          return;
-
-        case 'App\\Models\\BrandLocation':
-
-          if (fetchPage?.Outlet != null && fetchPage?.Brand != null) {
-            const [data3, count3] = await Promise.all([strapi.documents('api::car.car').findMany({
-              filters: {
-                Outlet: {
-                  Slug: fetchPage?.Outlet?.Slug
-                },
-                Brand: {
-                  Slug: fetchPage?.Brand?.Slug
-                }
               },
               start: (page - 1) * limit,
               limit: limit,
@@ -696,76 +603,14 @@ module.exports = {
                 Fuel_Type: {
                   populate: '*',
                 },
-                Outlet: {
-                  populate: '*'
-                }
 
 
               }
             }), strapi.documents("api::car.car").count({
               filters: {
-                Outlet: {
-                  Slug: fetchPage?.Outlet?.Slug
-                },
-                Brand: {
-                  Slug: fetchPage?.Brand?.Slug
-                }
-              },
-              populate: ['Brand', 'Outlet']
-            })])
-
-            console.log({ data3, count3 });
-
-
-            ctx.status = 200;
-            ctx.body = {
-              data: data3, meta: {
-                pagination: {
-                  total: count3,
-                  page: page,
-                  pageSize: limit,
-                  pageCount: Math.ceil(data3.length / limit),
-                  last_page: Math.ceil(data3.length / limit),
-                }
-
-              }
-            }
-          }
-
-          else if (fetchPage?.Outlet == null && fetchPage?.Brand != null) {
-            const [data3, count3] = await Promise.all([strapi.documents('api::car.car').findMany({
-              filters: {
-
-                Brand: {
-                  Slug: fetchPage?.Brand?.Slug
-                }
-              },
-              start: (page - 1) * limit,
-              limit: limit,
-              populate: {
-                Model: {
-                  populate: '*'
-                },
-                Brand: {
-                  populate: '*'
-                },
                 Location: {
-                  populate: '*'
+                  Slug: fetchPage?.Location?.Slug
                 },
-                Fuel_Type: {
-                  populate: '*',
-                },
-                Outlet: {
-                  populate: '*'
-                }
-
-
-              }
-            }), strapi.documents("api::car.car").count({
-              filters: {
-                Brand: {
-                  Slug: fetchPage?.Brand?.Slug
-                }
               },
               populate: ['Brand']
             })])
@@ -788,63 +633,186 @@ module.exports = {
             }
           }
 
-          else if (fetchPage?.Outlet != null && fetchPage?.Brand == null) {
-            const [data3, count3] = await Promise.all([strapi.documents('api::car.car').findMany({
-              filters: {
-                Outlet: {
-                  Slug: fetchPage?.Outlet?.Slug
-                },
 
-              },
-              start: (page - 1) * limit,
-              limit: limit,
-              populate: {
-                Model: {
-                  populate: '*'
-                },
-                Brand: {
-                  populate: '*'
-                },
-                Location: {
-                  populate: '*'
-                },
-                Fuel_Type: {
-                  populate: '*',
-                },
-                Outlet: {
-                  populate: '*'
-                }
-
-
-              }
-            }), strapi.documents("api::car.car").count({
-              filters: {
-                Outlet: {
-                  Slug: fetchPage?.Outlet?.Slug
-                },
-              },
-              populate: ['Outlet']
-            })])
-
-            console.log({ data3, count3 });
-
-
-            ctx.status = 200;
-            ctx.body = {
-              data: data3, meta: {
-                pagination: {
-                  total: count3,
-                  page: page,
-                  pageSize: limit,
-                  pageCount: Math.ceil(data3.length / limit),
-                  last_page: Math.ceil(data3.length / limit),
-                }
-
-              }
-            }
-          }
 
           return;
+
+      case 'App\\Models\\BrandLocation':
+
+      if(fetchPage?.Outlet != null && fetchPage?.Brand != null){
+        const [data3, count3] = await Promise.all([strapi.documents('api::car.car').findMany({
+          filters: {
+           Outlet: {
+              Slug: fetchPage?.Outlet?.Slug
+            },
+            Brand:{
+              Slug:fetchPage?.Brand?.Slug
+            }
+          },
+          start: (page - 1) * limit,
+          limit: limit,
+          populate: {
+            Model: {
+              populate: '*'
+            },
+            Brand: {
+              populate: '*'
+            },
+            Location: {
+              populate: '*'
+            },
+            Fuel_Type: {
+              populate: '*',
+            },
+            Outlet:{
+              populate:'*'
+            }
+
+
+          }
+        }), strapi.documents("api::car.car").count({
+          filters: {
+            Outlet: {
+              Slug: fetchPage?.Outlet?.Slug
+            },
+            Brand:{
+              Slug:fetchPage?.Brand?.Slug
+            }
+          },
+          populate: ['Brand','Outlet']
+        })])
+
+        console.log({ data3, count3 });
+
+
+        ctx.status = 200;
+        ctx.body = {
+          data: data3, meta: {
+            pagination: {
+              total: count3,
+              page: page,
+              pageSize: limit,
+              pageCount: Math.ceil(data3.length / limit),
+              last_page: Math.ceil(data3.length / limit),
+            }
+
+          }
+        }
+      }
+
+      else if(fetchPage?.Outlet == null && fetchPage?.Brand != null){
+        const [data3, count3] = await Promise.all([strapi.documents('api::car.car').findMany({
+          filters: {
+          
+            Brand:{
+              Slug:fetchPage?.Brand?.Slug
+            }
+          },
+          start: (page - 1) * limit,
+          limit: limit,
+          populate: {
+            Model: {
+              populate: '*'
+            },
+            Brand: {
+              populate: '*'
+            },
+            Location: {
+              populate: '*'
+            },
+            Fuel_Type: {
+              populate: '*',
+            },
+            Outlet:{
+              populate:'*'
+            }
+
+
+          }
+        }), strapi.documents("api::car.car").count({
+          filters: {
+            Brand:{
+              Slug:fetchPage?.Brand?.Slug
+            }
+          },
+          populate: ['Brand']
+        })])
+
+        console.log({ data3, count3 });
+
+
+        ctx.status = 200;
+        ctx.body = {
+          data: data3, meta: {
+            pagination: {
+              total: count3,
+              page: page,
+              pageSize: limit,
+              pageCount: Math.ceil(data3.length / limit),
+              last_page: Math.ceil(data3.length / limit),
+            }
+
+          }
+        }
+      }
+
+      else if(fetchPage?.Outlet != null && fetchPage?.Brand == null){
+        const [data3, count3] = await Promise.all([strapi.documents('api::car.car').findMany({
+          filters: {
+           Outlet: {
+              Slug: fetchPage?.Outlet?.Slug
+            },
+           
+          },
+          start: (page - 1) * limit,
+          limit: limit,
+          populate: {
+            Model: {
+              populate: '*'
+            },
+            Brand: {
+              populate: '*'
+            },
+            Location: {
+              populate: '*'
+            },
+            Fuel_Type: {
+              populate: '*',
+            },
+            Outlet:{
+              populate:'*'
+            }
+
+
+          }
+        }), strapi.documents("api::car.car").count({
+          filters: {
+            Outlet: {
+              Slug: fetchPage?.Outlet?.Slug
+            },
+          },
+          populate: ['Outlet']
+        })])
+
+        console.log({ data3, count3 });
+
+
+        ctx.status = 200;
+        ctx.body = {
+          data: data3, meta: {
+            pagination: {
+              total: count3,
+              page: page,
+              pageSize: limit,
+              pageCount: Math.ceil(data3.length / limit),
+              last_page: Math.ceil(data3.length / limit),
+            }
+
+          }
+        }
+      }
+
+      return;
 
         default:
           break;

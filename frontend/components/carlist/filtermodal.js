@@ -106,7 +106,6 @@ const FilterModal = ({
 
   const fetchBrands = async (e) => {
     const response = await FilterApi.brands({ search: searchBrand })
-    console.log(response);
     setbrandsFilter(response?.data?.data)
     setbrandLoading(false)
   }
@@ -138,9 +137,8 @@ const FilterModal = ({
   );
   const [modeldFilter, setModelFilter] = useState(models)
 
-  const fetchModels = async (e) => {
-    const response = await FilterApi.models({ search: searchModel })
-    console.log(response);
+  const fetchModels = async () => {
+    const response = await FilterApi.models({ search: searchModel, brand: `[${selectedBrands?.join(',')}]` })
     setModelFilter(response?.data?.data)
     setModelLoading(false)
   }
@@ -153,6 +151,13 @@ const FilterModal = ({
       setmodelfirst(false)
     }
   }, [searchModel])
+
+  // model_select
+  useEffect(() => {
+      setModelLoading(true)
+      fetchModels()
+  }, [selectedBrands])
+
 
 
 
@@ -178,7 +183,8 @@ const FilterModal = ({
             <Tabs selectedIndex={selectedTab} onSelect={(index) => setSelectedTab(index)} className={'flex  filter-modal-tab'}>
               <TabList className={' react-tabs__tab-list'} >
                 <Tab> <div className='flex items-center'>  Price Range </div></Tab>
-                <Tab> <div className='flex items-center'>  Brands & Model </div></Tab>
+                <Tab> <div className='flex items-center'>  Brands </div></Tab>
+                <Tab> <div className='flex items-center'>  Models </div></Tab>
                 <Tab> <div className='flex items-center'>   Model Year </div></Tab>
                 <Tab> <div className='flex items-center'> Km Driven </div></Tab>
                 <Tab> <div className='flex items-center'> Fuel Type </div></Tab>
@@ -329,9 +335,9 @@ const FilterModal = ({
                               <input
                                 type="checkbox"
                                 name={obj?.Slug + '-mob'}
-                                value={obj?.id}
+                                value={obj?.Name}
                                 onChange={handleBrandCheck}
-                                checked={selectedBrands.includes(obj?.id?.toString())}
+                                checked={selectedBrands.includes(obj?.Name)}
                               />
                               {obj?.Name}
                             </label>
@@ -345,7 +351,8 @@ const FilterModal = ({
                   <div className='mob-filter'>
                     <h4>Model</h4>
                     <div className='mob-fil-search'>
-                      <input onChange={handleSearch} type='text' placeholder='Search ' />
+                      {/* disabled={selectedBrands?.length == 0} */}
+                      <input onChange={handleModelSearch} type='text' placeholder='Search ' />
                       <button>
                         <SearchIcon />
                       </button>
@@ -354,10 +361,12 @@ const FilterModal = ({
                       modelLoading ?
                         'loading'
                         :
+                        // selectedBrands?.length > 0 ?
                         modeldFilter?.map((obj, index) => (
-                          <div className='checkbox'>
+                          <div key={index} className='checkbox'>
                             <label className='flex items-center gap-[10px]'>
                               <input
+                                disabled={selectedBrands?.length == 0}
                                 type="checkbox"
                                 name={obj?.Slug + '-mob'}
                                 value={obj?.id}
@@ -368,6 +377,11 @@ const FilterModal = ({
                             </label>
                           </div>
                         ))
+                      // :
+                      // <div className='text-[#050B20] flex justify-center items-center text-[15px]' >
+                      //   Please select a Brand
+                      // </div>
+
                     }
                   </div>
                 </TabPanel>

@@ -25,12 +25,12 @@ const Counter = ({ data }) => {
 
 
 
-                    <div className='grid grid-cols-1 md:grid-cols-2 gap-[0px] md:gap-[100px]'>
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-[0px] md:gap-[40px] lg:gap-[100px]'>
 
                         <div className='relative count-left'>
-                            <Image src={Contbg} alt='' width={746} height={675} className='hidden md:block' />
+                            <Image src={Contbg} alt='' width={746} height={675} className='hidden md:block h-full' />
                             <Image src={Cont2bg} alt='' width={746} height={675} className='block md:hidden' />
-                            <div className='absolute left-[0] md:left-[10%] top-0 w-full max-w-[490px] h-full z-[1] flex flex-col justify-center p-[25px] md:p-[25px]'>
+                            <div className='absolute left-[0] md:left-[1%] lg:left-[10%] top-0 w-full max-w-[490px] h-full z-[1] flex flex-col justify-center p-[25px] md:p-[25px]'>
                                 <h3>{data?.Heading}</h3>
                                 <p>{data?.Content}</p>
                                 <Link href={data?.Button?.URL || '#'} className='btn hidden md:flex items-center '> <span> {data?.Button?.Label} </span> <RightUparrow2Icon /> </Link>

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Base from "@/components/layout/Base";
 import Banner from "@/components/home/banner";
 import LocationFilter from "@/components/home/location_filter";

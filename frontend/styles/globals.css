@@ -174,3 +174,38 @@ body {
       -1.8em -1.8em 0 0em rgba(200, 200, 200, 0.2);
   }
 }
+
+
+.dealer-map-div iframe {
+  width: 100%;
+  height: 300px;
+  /* Default height */
+}
+
+@media (min-width: 640px) {
+
+  /* sm breakpoint */
+  .dealer-map-div iframe {
+    height: 350px;
+  }
+}
+
+@media (min-width: 1024px) {
+
+  /* lg breakpoint */
+  .dealer-map-div iframe {
+    height: 400px;
+  }
+}
+
+.dealer-top-des {
+  margin-top: 20px;
+  color: #404c5d;
+  font-feature-settings: 'liga' off, 'clig' off;
+  font-family: Inter;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 26.284px;
+  margin-bottom: 25px;
+}

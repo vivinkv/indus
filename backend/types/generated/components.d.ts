@@ -324,6 +324,103 @@ export interface ContactModalForm extends Struct.ComponentSchema {
   };
 }
 
+export interface DealerAdditionalDetails extends Struct.ComponentSchema {
+  collectionName: 'components_dealer_additional_details';
+  info: {
+    displayName: 'Additional Details';
+  };
+  attributes: {
+    Emails: Schema.Attribute.Component<'dealer.emails', true>;
+    Public_Number: Schema.Attribute.String;
+  };
+}
+
+export interface DealerDealer extends Struct.ComponentSchema {
+  collectionName: 'components_dealer_dealers';
+  info: {
+    description: '';
+    displayName: 'Dealer';
+  };
+  attributes: {
+    Address: Schema.Attribute.Text;
+    Email: Schema.Attribute.Email;
+    Landline: Schema.Attribute.String;
+    Latitude_Longitude: Schema.Attribute.String;
+    Location_Map: Schema.Attribute.Text;
+    Name: Schema.Attribute.String;
+  };
+}
+
+export interface DealerEmails extends Struct.ComponentSchema {
+  collectionName: 'components_dealer_emails';
+  info: {
+    displayName: 'Emails';
+  };
+  attributes: {
+    Email: Schema.Attribute.Email;
+  };
+}
+
+export interface DealerHead extends Struct.ComponentSchema {
+  collectionName: 'components_dealer_heads';
+  info: {
+    displayName: 'Head';
+  };
+  attributes: {
+    Email: Schema.Attribute.Email;
+    Mobile_Number: Schema.Attribute.String;
+    Name: Schema.Attribute.String;
+  };
+}
+
+export interface DealerManager extends Struct.ComponentSchema {
+  collectionName: 'components_dealer_managers';
+  info: {
+    displayName: 'Manager';
+  };
+  attributes: {
+    Email: Schema.Attribute.Email;
+    Mobile_Number: Schema.Attribute.String;
+    Name: Schema.Attribute.String;
+  };
+}
+
+export interface FooterBrand extends Struct.ComponentSchema {
+  collectionName: 'components_footer_brands';
+  info: {
+    displayName: 'Brand';
+  };
+  attributes: {
+    Brands: Schema.Attribute.Relation<'oneToMany', 'api::brand.brand'>;
+    Title: Schema.Attribute.String;
+  };
+}
+
+export interface FooterCustomerSupport extends Struct.ComponentSchema {
+  collectionName: 'components_footer_customer_supports';
+  info: {
+    displayName: 'Customer Support';
+  };
+  attributes: {
+    Static_Pages: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::static-page.static-page'
+    >;
+    Title: Schema.Attribute.String;
+  };
+}
+
+export interface FooterShowroom extends Struct.ComponentSchema {
+  collectionName: 'components_footer_showrooms';
+  info: {
+    displayName: 'Showroom';
+  };
+  attributes: {
+    Locations: Schema.Attribute.Relation<'oneToMany', 'api::location.location'>;
+    Title: Schema.Attribute.String;
+  };
+}
+
 export interface HomeBannerSection extends Struct.ComponentSchema {
   collectionName: 'components_home_banner_sections';
   info: {
@@ -390,6 +487,12 @@ export interface MenuFooter extends Struct.ComponentSchema {
     displayName: 'Footer';
   };
   attributes: {
+    Brand: Schema.Attribute.Component<'footer.brand', false>;
+    Customer_Support: Schema.Attribute.Component<
+      'footer.customer-support',
+      false
+    >;
+    Location_Showrooms: Schema.Attribute.Component<'footer.showroom', false>;
     Page: Schema.Attribute.Component<'menu.page', true>;
   };
 }
@@ -410,6 +513,7 @@ export interface MenuHeader extends Struct.ComponentSchema {
 export interface MenuLinks extends Struct.ComponentSchema {
   collectionName: 'components_menu_links';
   info: {
+    description: '';
     displayName: 'Links';
   };
   attributes: {
@@ -427,6 +531,14 @@ export interface MenuLocation extends Struct.ComponentSchema {
     Label: Schema.Attribute.String;
     URL: Schema.Attribute.String & Schema.Attribute.DefaultTo<'#'>;
   };
+}
+
+export interface MenuMenuLinks extends Struct.ComponentSchema {
+  collectionName: 'components_menu_menu_links';
+  info: {
+    displayName: 'Menu Links';
+  };
+  attributes: {};
 }
 
 export interface MenuPage extends Struct.ComponentSchema {
@@ -497,17 +609,16 @@ export interface SeoGoogleTagManager extends Struct.ComponentSchema {
 export interface SettingsContact extends Struct.ComponentSchema {
   collectionName: 'components_settings_contacts';
   info: {
-    description: '';
     displayName: 'Contact';
   };
   attributes: {
-    Address1: Schema.Attribute.Text;
+    Address1: Schema.Attribute.Text & Schema.Attribute.Required;
     Address2: Schema.Attribute.Text;
-    Email: Schema.Attribute.Email;
+    Email: Schema.Attribute.Email & Schema.Attribute.Required;
     Google_Map_Embed_Code: Schema.Attribute.String;
     Google_Map_URL: Schema.Attribute.String;
-    Phone_Number: Schema.Attribute.String;
-    WhatsApp_Number: Schema.Attribute.String;
+    Phone_Number: Schema.Attribute.String & Schema.Attribute.Required;
+    WhatsApp_Number: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
@@ -576,9 +687,9 @@ export interface SharedSeo extends Struct.ComponentSchema {
     CanonicalURL: Schema.Attribute.String;
     Keywords: Schema.Attribute.Text;
     Meta_Description: Schema.Attribute.Text;
-    Meta_Image: Schema.Attribute.Media<'images' | 'files'>;
+    Meta_Image: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
     Meta_Robots: Schema.Attribute.String;
-    Meta_Title: Schema.Attribute.String;
+    Meta_Title: Schema.Attribute.Text;
     Meta_Viewport: Schema.Attribute.String;
     OG_Description: Schema.Attribute.Text;
     OG_Title: Schema.Attribute.String;
@@ -689,6 +800,14 @@ declare module '@strapi/strapi' {
       'contact.certified-excellence': ContactCertifiedExcellence;
       'contact.image-section': ContactImageSection;
       'contact.modal-form': ContactModalForm;
+      'dealer.additional-details': DealerAdditionalDetails;
+      'dealer.dealer': DealerDealer;
+      'dealer.emails': DealerEmails;
+      'dealer.head': DealerHead;
+      'dealer.manager': DealerManager;
+      'footer.brand': FooterBrand;
+      'footer.customer-support': FooterCustomerSupport;
+      'footer.showroom': FooterShowroom;
       'home.banner-section': HomeBannerSection;
       'home.buy-and-sell-section': HomeBuyAndSellSection;
       'home.car-journey': HomeCarJourney;
@@ -698,6 +817,7 @@ declare module '@strapi/strapi' {
       'menu.header': MenuHeader;
       'menu.links': MenuLinks;
       'menu.location': MenuLocation;
+      'menu.menu-links': MenuMenuLinks;
       'menu.page': MenuPage;
       'offer.exclusive-deals-section': OfferExclusiveDealsSection;
       'offer.offer-section': OfferOfferSection;

@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 
 
-import Car1 from '../../public/car1.png';
+import NoCar from '../../public/NOIMAGE.jpg';
 import Car2 from '../../public/car2.png';
 import Car3 from '../../public/car3.png';
 import Carbadg from '../../public/logo_tag.png';
@@ -17,22 +17,33 @@ const Productlist = ({ data }) => {
 
     const router = useRouter();
 
+    const imageReturn = (src) => {
+        if (src?.endsWith('/')) {
+            return NoCar
+        }
+        return src
+    }
+
     useEffect(() => {
         router.prefetch(`/cars/${data?.Slug}`);
     }, [data?.Slug, router]);
 
     return (
-        <div className='product_list'>
-            <Image src={Carbadg} alt='' className='tag' />
-            <Image src={data?.Image_URL?.Front_Image} width={500} height={100} alt='' className='carimg' />
-            <div className='py-[10px] xl:py-[17px] px-[15px] xl:px-[30px]'>
-                <div className='flex items-center justify-between mb-[15px]'>
-                    <h3>{data?.Name}</h3>
-                    <span>{data?.Brand?.Name}</span>
+        <div className='product_list items-center '>
+             <Image src={Carbadg} alt='' className='tag' />
+            <div className='relative min-w-[140px] sm:min-w-[auto] w-[140px] sm:w-[40%] md:w-full overflow-hidden simlar_img_cntr  '>
+           
+            <Image src={imageReturn(data?.Image_URL?.Front_Image)} width={500} height={100} alt='' className='carimg' />
+            </div>
+          
+            <div className='py-[15px] xl:py-[17px] px-[15px] xl:px-[30px]    w-full'>
+                <div className='flex items-center justify-between mb-[5px] md:mb-[15px] w-full relative md:pr-[70px]'>
+                   <h3> <a href={`/cars/${data?.Slug}`} className='no-border '> {data?.Name}</a></h3>
+                    <span className='absolute top-[-10px] md:top-[unset] left-[-74px] md:left-[unset] md:right-0 '>{data?.Brand?.Name}</span>
                 </div>
                 <p>{data?.Description || data?.Name}</p>
                 <hr />
-                <div className='grid grid-cols-3 gap-[15px] xl:gap-[25px] car-count-cntr'>
+                <div className='grid grid-cols-3 gap-[5px] md:gap-[15px] xl:gap-[25px] car-count-cntr'>
 
                     <div>
                         <div className='flex flex-col items-center'>
@@ -49,7 +60,7 @@ const Productlist = ({ data }) => {
                     </div>
 
                     <div>
-                        <div className='flex flex-col items-center'>
+                        <div className='flex flex-col items-center prd-lis-rate'>
                             <TransitionIcon />
                             <h5>{data?.Transmission_Type}</h5>
                         </div>
@@ -62,7 +73,7 @@ const Productlist = ({ data }) => {
                         <PriceIcon />
                         <h4 > {parseInt(data?.PSP, 10)}</h4>
                     </div>
-                    <a href={`/cars/${data?.Slug}`}>View</a>
+                    <a className='link' href={`/cars/${data?.Slug}`}>View</a>
                 </div>
 
             </div>

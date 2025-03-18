@@ -41,6 +41,7 @@ const Book = ({ data }) => {
             setTimeout(() => {
                 seterrorMessage('')
             }, 5000);
+            setLoading(false)
             return
         }
 
@@ -58,7 +59,6 @@ const Book = ({ data }) => {
 
         try {
             const response = await ContactApi.save(dataToSubmit)
-            console.log(response);
             router.push('/thank-you')
         } catch (error) {
             console.log(error);
@@ -123,7 +123,7 @@ const Book = ({ data }) => {
                                         data?.Certified_Excellence?.Button[0]?.Label
                                     }
                                 </a>
-                                <Link href={data?.Certified_Excellence?.Button[1]?.URL || '#'} className='btn-link'> {
+                                <Link href={data?.Certified_Excellence?.Button[1]?.URL || '#'} target='_blank' className='btn-link'> {
                                     data?.Certified_Excellence?.Button[1]?.Label
                                 }</Link>
                             </div>

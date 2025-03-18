@@ -10,20 +10,26 @@ import { SliderarrowIcon, ViewarrowIcon } from '../Common/svgicons';
 import Productlist from '../Common/productlist';
 import Link from 'next/link';
 
-const Featured = ({ data }) => {  
+const Featured = ({ data }) => {
 
   const settings = {
     dots: false,
-    arrows: true,
+    arrows: data?.length > 3 ? true : false,
     infinite: true,
     speed: 500,
     slidesToShow: 3,
     slidesToScroll: 1,
     centerMode: true, // Enable center mode
-    centerPadding: "100px",
+   
     nextArrow: <button><SliderarrowIcon /></button>, // Custom next arrow
     prevArrow: <button><SliderarrowIcon /></button>, // Custom previous arrow
     responsive: [
+      {
+        breakpoint: 1920,
+        settings: {
+          centerPadding: "100px",
+        }
+      },
       {
         breakpoint: 1024,
         settings: {
@@ -36,7 +42,7 @@ const Featured = ({ data }) => {
       {
         breakpoint: 768,
         settings: {
-          slidesToShow: 1,
+          slidesToShow: 2,
           slidesToScroll: 1,
           centerMode: true, // Enable center mode
           centerPadding: "50px",
@@ -48,7 +54,7 @@ const Featured = ({ data }) => {
           slidesToShow: 1,
           slidesToScroll: 1,
           centerMode: true, // Enable center mode
-          centerPadding: "50px",
+          centerPadding: "20px",
         }
       }
     ]
@@ -66,7 +72,7 @@ const Featured = ({ data }) => {
         </div>
 
 
-        <div className='featured-slider'>
+        <div className='featured-slider hmfet'>
           <Slider {...settings}>
             {
               data?.map((obj, index) => (
@@ -75,7 +81,7 @@ const Featured = ({ data }) => {
                 </div>
               ))
             }
-            
+
           </Slider>
         </div>
 

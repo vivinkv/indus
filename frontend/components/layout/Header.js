@@ -93,6 +93,13 @@ const Header = ({ data, general }) => {
     const handleMenuClick = () => {
         setIsNavFixed(!isNavFixed);
         setIsFixed(!isFixed);
+
+        if (!isNavFixed) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+
     };
 
 
@@ -102,6 +109,14 @@ const Header = ({ data, general }) => {
     const handleOpen = () => {
         setOpen(true)
     }
+
+
+    useEffect(() => {
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, []);
+
     return (
         <>
 
@@ -131,7 +146,7 @@ const Header = ({ data, general }) => {
                             <ul className='flex items-center'>
                                 {
                                     data?.map((obj, index) => (
-                                        <li key={index} className={`${router?.pathname == obj?.Link ? 'active' : ''}`} > <Link href={obj?.Link || '#'}>{obj?.Label}</Link></li>
+                                        <li key={index} className={`${router?.pathname == obj?.Link ? 'active' : ''}`} > <Link target={obj?.Link?.startsWith?.('http') ? '_blank' : '_self'} href={obj?.Link || '#'}>{obj?.Label}</Link></li>
                                     ))
                                 }
                             </ul>

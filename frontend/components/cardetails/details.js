@@ -8,36 +8,16 @@ import {
   BreadarrowIcon,
   DividerIcon,
   DotIcon,
-  EmailIcon,
-  FiltCalenderrIcon,
-  FiltCarIcon,
-  FiltKmIcon,
-  Find1Icon,
   Find7Icon,
   HomeIcon,
-  Inspect1Icon,
-  Inspect2Icon,
-  Inspect3Icon,
-  Inspect4Icon,
-  Inspect5Icon,
-  Inspect6Icon,
   Inspect7Icon,
-  LightIcon,
-  Location2Icon,
   Location3Icon,
-  LocationIcon,
   MeterIcon,
-  PhoneIcon,
   Price2Icon,
-  PriceIcon,
-  PricetagIcon,
   PumbIcon,
-  Search2Icon,
-  SearchIcon,
   SliderarrowIcon,
   TransitionIcon,
   User2Icon,
-  UserIcon,
   ViewarrowIcon,
 } from "../Common/svgicons";
 import moment from "moment";
@@ -47,6 +27,7 @@ import EnquiryModal from "../Common/modal";
 import Link from "next/link";
 
 const Details = ({ detail }) => {
+
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
@@ -151,7 +132,7 @@ const Details = ({ detail }) => {
       {
         breakpoint: 768,
         settings: {
-          slidesToShow: 1,
+          slidesToShow: 2,
           slidesToScroll: 1,
           centerMode: true, // Enable center mode
           centerPadding: "50px",
@@ -163,7 +144,7 @@ const Details = ({ detail }) => {
           slidesToShow: 1,
           slidesToScroll: 1,
           centerMode: true, // Enable center mode
-          centerPadding: "50px",
+          centerPadding: "30px",
         },
       },
     ],
@@ -179,7 +160,10 @@ const Details = ({ detail }) => {
             <li>
               <BreadarrowIcon />
             </li>
-            <li>Used cars in Kochi</li>
+            {
+              detail?.Outlet &&
+              <li>Used cars in {detail?.Outlet?.Name}</li>
+            }
             <li>
               <BreadarrowIcon />
             </li>
@@ -264,9 +248,7 @@ const Details = ({ detail }) => {
                   <User2Icon />
                   {detail?.Owner_Type}
                 </p>
-                {
-                  console.log(detail)
-                }
+               
                 {
                   detail?.Home_Test_Drive &&
                   <p className="flex items-center gap-[8px]">
@@ -432,10 +414,6 @@ const Details = ({ detail }) => {
                           detail?.Inspection_Report.slice(3, 6).map(
                             (data, index) => (
                               <ul key={index}>
-                                {console.log(
-                                  "amlamlsa",
-                                  `${process.env.NEXT_PUBLIC_DOMAIN}${data?.Icon?.url}`
-                                )}
                                 <li className="flex items-center justify-between">
                                   <div className="flex items-center gap-[15px]">
                                     <span className="flex items-center justify-center">
@@ -587,8 +565,8 @@ const Details = ({ detail }) => {
 
             <div className="md:flex items-center justify-between md:mb-[45px]">
               {
-                detail.Find_More.slice(0, 3).map((data, index) => (
-                  <Link href={data?.URL} className="flex items-center gap-[15px] justify-between find-list w-full md:max-w-[332px]">
+                detail?.Find_More?.map((data, index) => (
+                  <Link key={index} href={`/buy/${data?.Combination?.Slug}`} className="flex items-center gap-[15px] justify-between find-list w-full md:max-w-[332px]">
 
                     <div className="flex items-center gap-[15px]">
                       <span className="flex items-center justify-center">

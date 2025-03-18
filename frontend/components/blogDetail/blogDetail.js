@@ -1,6 +1,5 @@
 import Image from "next/image";
 import React from "react";
-import testImage from "@/public/banner.png";
 import moment from "moment";
 import { ImageUrl } from "@/Common/image-url";
 function BlogDetail({ detail }) {
@@ -8,7 +7,7 @@ function BlogDetail({ detail }) {
   return (
 
     <div className="lg:mx-[162px] lg:px-[15px]">
-      <p className="text-[14px] text-stone-400 text-end mb-[10px]">{moment(detail?.createdAt).format("DD MMMM YYYY")}</p>
+      <p className="text-[14px] text-stone-400 text-end mb-[10px]">{moment(detail?.publishedAt).format("DD MMMM YYYY")}</p>
 
       <Image
         src={ImageUrl(detail?.Banner_Image?.url)}

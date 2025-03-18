@@ -22,6 +22,7 @@ import Skeleton from '../Common/skeleton';
 import { CarsApi } from '@/Datas/Endpoints/Cars';
 import EnquiryModal from '../Common/modal';
 import RemoveStyleAttributes from '@/Common/removeStyleAttribute';
+import SelectedChip from '../Common/selectedChip'
 
 
 
@@ -35,6 +36,7 @@ const List = ({
     combinationModel,
     models
 }) => {
+
     const settings = {
         dots: false,
         arrows: false,
@@ -137,7 +139,7 @@ const List = ({
 
     const [showFull, setShowFull] = useState(false);
 
-    const description = data?.Description || data?.Top_Description || "";
+    const description = data?.Description || data?.Top_Description || data?.Content || "";
 
     const handleShowMore = () => {
         setShowFull(!showFull)
@@ -226,40 +228,59 @@ const List = ({
     const [selectedBrands, setSelectedBrands] = useState(
         parseFilterStrings(brand) || (combinationBrand ? [combinationBrand] : [])
     )
-    const handleBrandCheck = event => {
-        const { value, checked } = event.target
-        setSelectedBrands(prev => {
-            const updatedFuels = checked
-                ? [...prev, value]
-                : prev.filter(item => item !== value)
 
-            // url search
-            const url = new URL(window.location.href)
-            if (updatedFuels.length > 0) {
-                url.searchParams.set('brand', `${updatedFuels.join(',')}`)
+    const brandSelection = (value, checked) => {
+        setSelectedBrands(prev => {
+            const updatedBrands = checked
+                ? [...prev, value]
+                : prev.filter(item => item !== value);
+
+            // The issue: updatedBrands may not be the latest state
+            const url = new URL(window.location.href);
+
+            if (updatedBrands?.length > 0) {
+                url.searchParams.set('brand', updatedBrands.join(','));
             } else {
-                url.searchParams.delete('brand')
+                url.searchParams.delete('brand');
             }
 
-            router.replace(url.pathname + url.search, undefined, { shallow: true })
+            router.replace(url.pathname + url.search, undefined, { shallow: true });
 
-            return updatedFuels
-        })
+            return updatedBrands;
+        });
+    };
+
+    const handleBrandCheck = event => {
+        const { value, checked } = event.target
+        if (value == combinationBrand) return
+        brandSelection(value, checked)
+        setTimeout(() => {
+            handleModelWithBrand(value)
+        }, 5);
         ScrollToTop()
     }
 
     const [selectedModels, setSelectedModels] = useState(
         parseFilterStrings(model) || (combinationModel ? [combinationModel] : [])
     )
-    const handleModelCheck = event => {
-        const { value, checked } = event.target
+    const [modalDetails, setmodalDetails] = useState([])
+    const handleModelCheck = (event, item) => {
+        const { checked } = event.target
+        const value = item?.Name
+        const modelBrand = item?.Brand?.Name
+        const isBrandPresent = selectedBrands?.includes(modelBrand);
+        const url = new URL(window.location.href)
+        if (!isBrandPresent && modelBrand && checked) {
+            setTimeout(() => {
+                brandSelection(modelBrand, checked, url)
+            }, 3);
+        }
         setSelectedModels(prev => {
             const updatedFuels = checked
                 ? [...prev, value]
                 : prev.filter(item => item !== value)
 
             // url search
-            const url = new URL(window.location.href)
             if (updatedFuels.length > 0) {
                 url.searchParams.set('model', `${updatedFuels.join(',')}`)
             } else {
@@ -270,7 +291,54 @@ const List = ({
 
             return updatedFuels
         })
+        // model detail
+        setmodalDetails(prev => {
+            const updatedDetails = checked
+                ? [...prev, { Name: item.Name, Brand: item.Brand?.Name }]
+                : prev.filter(pre => pre.Name !== item.Name)
+
+            return updatedDetails
+        })
         ScrollToTop()
+    }
+
+    const handleModelWithBrand = (brandName) => {
+        const modelsToRemove = modalDetails.filter(mod => mod?.Brand === brandName);
+
+        setSelectedModels(prevModels => {
+            // Remove models that match the brand
+            const updatedModels = prevModels.filter(item => !modelsToRemove.some(model => model?.Name === item));
+
+            // Update the URL
+            const url = new URL(window.location.href);
+            if (updatedModels.length > 0) {
+                url.searchParams.set('model', updatedModels.join(','));
+            } else {
+                url.searchParams.delete('model'); // Remove 'model' param if empty
+            }
+
+            router.replace(url.pathname + url.search, undefined, { shallow: true });
+
+            return updatedModels;
+        });
+    };
+
+
+    const handleModelDeselect = item => {
+        setSelectedModels(prevModels => {
+            const updatedModels = prevModels.filter(model => model !== item)
+            // Update the URL when removing a brand
+            const url = new URL(window.location.href)
+            if (updatedModels.length > 0) {
+                url.searchParams.set('model', `${updatedModels?.join(',')}`)
+            } else {
+                url.searchParams.delete('model') // Remove brand param if empty
+            }
+
+            router.replace(url.pathname + url.search, undefined, { shallow: true })
+
+            return updatedModels
+        })
     }
 
     const handleBrandDeselect = item => {
@@ -288,6 +356,7 @@ const List = ({
 
             return updatedBrands
         })
+        handleModelWithBrand(item)
     }
 
     const [selectedTransmission, setSelectedTransmission] = useState(
@@ -328,6 +397,9 @@ const List = ({
 
     const [isFilterCleared, setisFilterCleared] = useState(false)
     const handleIsFilterClear = () => {
+        if (loading) {
+            return
+        }
         clearAllFilters()
         setTimeout(() => {
             setisFilterCleared(true)
@@ -357,9 +429,19 @@ const List = ({
         setSelectedBrands(combinationBrand ? [combinationBrand] : []);
         setSelectedModels(combinationModel ? [combinationModel] : []);
         setSelectedTransmission([])
-        setrsValues([RSMIN, RSMAX])
-        setValues([MIN, MAX])
+        handleRSclear()
+        handleValueclear()
+        handleKMclear()
+    }
+
+    const handleKMclear = () => {
         setkmValues([KMMIN, KMMAX])
+    }
+    const handleValueclear = () => {
+        setValues([MIN, MAX])
+    }
+    const handleRSclear = () => {
+        setrsValues([RSMIN, RSMAX])
     }
 
     const [loadMoreLoading, setloadMoreLoading] = useState(false)
@@ -397,6 +479,8 @@ const List = ({
             page: loadPage,
             pageSize: toLimit || limit
         })
+
+        // console.log(response)
         if (pageNumber > 1) {
             setCarData(prevData =>
                 (prevData || []).concat(response?.data?.data || [])
@@ -569,44 +653,130 @@ const List = ({
                                         <FilterIcon /> Filter
                                     </div>
                                 </li>
-                                <li>
+                                {/* <li>
                                     {' '}
                                     <div className='flex items-center gap-[13px]'>
                                         {' '}
                                         <SortIcon /> Sort{' '}
                                     </div>{' '}
-                                </li>
+                                </li> */}
                                 <li onClick={() => handleOpen('price')}>Price Range </li>
                                 <li onClick={() => handleOpen('brand')}>Brand </li>
                             </ul>
 
                             <div className='flex mb-[25px] mt-3 justify-between'>
-                                <div className='flex flex-wrap gap-2'>
-                                    {selectedBrands?.map((brand, index) => (
-                                        <div
-                                            key={index}
-                                            className='px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm font-medium flex items-center'
-                                        >
-                                            {brand}
+                                <div className='flex gap-2'>
 
-                                            <CloseIcon onClick={() => handleBrandDeselect(brand)} />
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {
-                                    carData?.length > 0 &&
-                                    <div>
-                                        <button onClick={handleIsFilterClear} className='text-black'>
-                                            {' '}
-                                            Clear
-                                        </button>
+                                    {/* model */}
+                                    <div className='flex flex-wrap gap-2'>
+                                        {selectedModels?.map((model, index) => (
+                                            <SelectedChip key={index}>
+                                                {model}
+                                                {
+                                                    combinationBrand != model && (
+                                                        <CloseIcon onClick={() => handleModelDeselect(model)} />
+                                                    )
+                                                }
+                                            </SelectedChip>
+                                        ))}
                                     </div>
-                                }
+
+                                    {/* brand */}
+                                    <div className='flex flex-wrap gap-2'>
+                                        {selectedBrands?.map((brand, index) => (
+                                            <SelectedChip key={index}>
+                                                {brand}
+
+                                                {
+                                                    combinationBrand != brand && (
+                                                        <CloseIcon onClick={() => handleBrandDeselect(brand)} />
+                                                    )
+                                                }
+                                            </SelectedChip>
+                                        ))}
+                                    </div>
+
+                                    {/* transmission */}
+                                    <div className='flex flex-wrap gap-2'>
+                                        {selectedTransmission?.map((transmission, index) => (
+                                            <SelectedChip key={index}>
+                                                {transmission}
+
+                                                {
+                                                    transmission && (
+                                                        <CloseIcon onClick={() => handleTransmissionCheck({ target: { checked: false, value: transmission } })} />
+                                                    )
+                                                }
+                                            </SelectedChip>
+                                        ))}
+                                    </div>
+
+                                    {/* fuel */}
+                                    <div className='flex flex-wrap gap-2'>
+                                        {selectedFuels?.map((fuel, index) => (
+                                            <SelectedChip key={index}>
+                                                {fuel}
+
+                                                {
+                                                    fuel && (
+                                                        <CloseIcon onClick={() => handleFuelCheck({ target: { checked: false, value: fuel } })} />
+                                                    )
+                                                }
+                                            </SelectedChip>
+                                        ))}
+                                    </div>
+
+                                    {/* km-driven */}
+                                    {
+                                        kmvalues?.length > 0 &&
+                                        (kmvalues[0] != KMMIN || kmvalues[1] != KMMAX) &&
+                                        <div className='flex flex-wrap gap-2'>
+                                            <SelectedChip>
+                                                {`KM Driven: ${kmvalues[0]?.toLocaleString('en-IN')} - ${kmvalues[1]?.toLocaleString('en-IN')}`}
+
+                                                <CloseIcon onClick={handleKMclear} />
+                                            </SelectedChip>
+                                        </div>
+                                    }
+
+                                    {/* model-year */}
+                                    {
+                                        values?.length > 0 &&
+                                        (values[0] != MIN || values[1] != MAX) &&
+                                        <div className='flex flex-wrap gap-2'>
+                                            <SelectedChip>
+                                                {`Year: ${values[0]?.toLocaleString('en-IN')} - ${values[1]?.toLocaleString('en-IN')}`}
+
+                                                <CloseIcon onClick={handleValueclear} />
+                                            </SelectedChip>
+                                        </div>
+                                    }
+
+                                    {/* price */}
+                                    {
+                                        rsvalues?.length > 0 &&
+                                        (rsvalues[0] != RSMIN || rsvalues[1] != RSMAX) &&
+                                        <div className='flex flex-wrap gap-2'>
+                                            <SelectedChip>
+                                                {`Budget: ${rsvalues[0]?.toLocaleString('en-IN')} - ${rsvalues[1]?.toLocaleString('en-IN')}`}
+
+                                                <CloseIcon onClick={handleValueclear} />
+                                            </SelectedChip>
+                                        </div>
+                                    }
+
+
+                                </div>
+                                <div>
+                                    <button onClick={handleIsFilterClear} className='text-black'>
+                                        {' '}
+                                        Clear
+                                    </button>
+                                </div>
                             </div>
 
                             {loading ? (
-                                <div className='grid md:grid-cols-2 xl:grid-cols-3 gap-[30px]'>
+                                <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[30px]'>
                                     {[...Array(6)].map((_, index) => (
                                         <Skeleton key={index} width={'100%'} height={'300px'} />
                                     ))}
@@ -662,13 +832,13 @@ const List = ({
 
                             {
                                 data?.Exclusive_Section?.map((obj, index) => (
-                                    <div className=' mt-[45px] mb-[45px]'>
+                                    <div className=' mt-[45px] mb-[45px] hidden md:block'>
                                         <Image className='cursor-pointer' onClick={handleCallBackModalOpen} src={ImageUrl(obj?.Image?.url)} alt='' width={976} height={237} />
                                     </div>
                                 ))
                             }
 
-                            <div className='hidden md:grid grid-cols-2 gap-[17px] mt-[42px] '>
+                            <div className='hidden md:grid grid-cols-1 lg:grid-cols-2 gap-[17px] mt-[42px] '>
                                 {data?.Assurance_Section && (
                                     <div>
                                         <div className='benefits'>
@@ -677,7 +847,7 @@ const List = ({
                                                 alt=''
                                                 className='absolute right-[-121px] top-[-30px]'
                                             />
-                                            <div className='flex items-center justify-between mb-[20px]'>
+                                            <div className='flex items-center justify-between mb-[20px] min-h-[26px]'>
                                                 <h5>{data?.Assurance_Section?.Title}</h5>
                                                 <Image
                                                     src={ImageUrl(data?.Assurance_Section?.Icon?.url)}
@@ -705,9 +875,9 @@ const List = ({
                                             <Image
                                                 src={benefits3}
                                                 alt=''
-                                                className='absolute right-[0] top-[0]'
+                                                className='absolute  right-[0] top-[0]'
                                             />
-                                            <div className='flex items-center justify-between mb-[20px]'>
+                                            <div className='flex items-center justify-between mb-[20px] min-h-[26px]'>
                                                 <h5 className='flex items-center gap-[5px]'>
                                                     {' '}
                                                     <BenefitoffIcon /> {data?.Benefit_Section?.Title}
@@ -739,7 +909,7 @@ const List = ({
                                                 alt=''
                                                 className='absolute right-[-121px] top-[-30px]'
                                             />
-                                            <div className='flex items-center justify-between mb-[20px]'>
+                                            <div className='flex items-center justify-between mb-[20px] min-h-[26px]'>
                                                 <h5>{data?.Assurance_Section?.Title}</h5>
                                                 <Image
                                                     src={ImageUrl(data?.Assurance_Section?.Icon?.url)}
@@ -769,7 +939,7 @@ const List = ({
                                                 alt=''
                                                 className='absolute right-[0] top-[0]'
                                             />
-                                            <div className='flex items-center justify-between mb-[20px]'>
+                                            <div className='flex items-center justify-between mb-[20px] min-h-[26px]'>
                                                 <h5 className='flex items-center gap-[5px]'>
                                                     {' '}
                                                     <BenefitoffIcon /> {data?.Benefit_Section?.Title}

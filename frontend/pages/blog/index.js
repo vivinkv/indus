@@ -1,5 +1,4 @@
 import { Params } from '@/Common/params'
-import FeaturedBlog from '@/components/blog/featuredBlogs/featuredBlog'
 import OtherBlogs from '@/components/blog/otherBlogs/otherBlogs'
 import Base from '@/components/layout/Base'
 import { FilterApi } from '@/Datas/Endpoints/filters'
@@ -14,7 +13,6 @@ import { HomeApi } from '@/Datas/Endpoints/Home'
 import { BlogApi } from '@/Datas/Endpoints/blog'
 
 function Blog({ menu, data, cta, blog }) {
-  console.log("dadfasfs", blog)
 
   return (
     <Base menu={menu} meta={data?.data?.SEO} bottomDescription={data?.data?.Bottom_Description}  >

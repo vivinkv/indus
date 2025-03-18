@@ -46,7 +46,7 @@ const Moment = ({ data }) => {
                         <p className='flex md:hidden items-center mb-[48px]'>  <RedDotIcon />  {data?.Company_Name}</p>
                     </div>
 
-                    <div className='grid grid-cols-2 md:grid-cols-4 gap-[27px]'>
+                    <div className='grid grid-cols-2 md:grid-cols-4 gap-[27px] story_list_cntr'>
                         {
                             data?.Shorts?.map((obj, index) => (
                                 <div key={index}>
