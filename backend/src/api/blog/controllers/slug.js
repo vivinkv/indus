@@ -396,7 +396,7 @@ module.exports = {
         meta: {
           pagination: {
             firstPage: 1,
-            current_page: Number(start) + 1,
+            current_page: Number(start),
             limit: Number(limit),
             total: total,
             lastPage: Math.ceil(total / Number(limit)),

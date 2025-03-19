@@ -32,7 +32,7 @@ const Journey = ({ data }) => {
                                     <div key={index} className='flex md:block items-center '>
                                         <Image width={170} height={110} src={ImageUrl(obj?.Image?.url)} alt='' />
                                         <div>
-                                            <h4>{obj?.title}</h4>
+                                            <h4>{obj?.Title}</h4>
                                             <p>{obj?.Description}</p>
                                         </div>
                                     </div>

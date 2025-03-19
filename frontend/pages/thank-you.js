@@ -38,23 +38,27 @@ export async function getStaticProps() {
     const menu = await MenuApi.menu(Params)
     const general = await MenuApi.general(Params)
     const data = await ResponseApi.response(Params)
+
     return {
       props: {
         menu: menu?.data?.data,
         general: general?.data?.data,
-        data: data?.data
+        data: data?.data,
+        notFound: false
       },
-      revalidate: 10,
+      revalidate: 10
     };
   } catch (error) {
     console.error('Error ', error);
 
     return {
       props: {
-        header: null, // or handle the error in a way that makes sense for your application
+        menu: null,
+        general: null,
+        data: null,
+        notFound: true
       },
-      revalidate: 10,
-      Notfound:true
+      revalidate: 10
     };
   }
 }

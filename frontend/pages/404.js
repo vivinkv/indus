@@ -40,7 +40,8 @@ export async function getStaticProps() {
       props: {
         menu: menu?.data?.data,
         general: general?.data?.data,
-        data: data?.data
+        data: data?.data,
+        notFound:false
       },
       revalidate: 10,
     };
@@ -49,10 +50,13 @@ export async function getStaticProps() {
 
     return {
       props: {
-        data: null, // or handle the error in a way that makes sense for your application
+        menu: null,
+        general: null,
+        data: null,
+        notFound: true // Moved inside props and changed from Notfound to notFound
       },
       revalidate: 10,
-      Notfound:true
+      
     };
   }
 }

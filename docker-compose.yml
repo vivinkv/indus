@@ -62,7 +62,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:1337/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:1337/api/health"]
       interval: 30s      # Increased from 15s to 30s
       timeout: 30s       # Increased from 10s to 30s
       retries: 10        # Keeping 10 retries
@@ -73,24 +73,19 @@ services:
       context: .
       dockerfile: frontend/Dockerfile
     environment:
-      NEXT_PUBLIC_API_BASE_PATH: ${NEXT_PUBLIC_API_BASE_PATH}
-      NEXT_PUBLIC_DOMAIN: ${NEXT_PUBLIC_DOMAIN}
+      NEXT_PUBLIC_API_BASE_PATH: "http://backend:1337/api/"
+      NEXT_PUBLIC_DOMAIN: "http://localhost:1337"
       NEXT_PUBLIC_RECAPTCHA_SITEKEY: ${NEXT_PUBLIC_RECAPTCHA_SITEKEY}
       NEXT_PUBLIC_RECAPTCHA_SECRETKEY: ${NEXT_PUBLIC_RECAPTCHA_SECRETKEY}
+      NEXT_PUBLIC_HOST: "0.0.0.0"  # Add this to listen on all network interfaces
     ports:
       - "3000:3000"
     depends_on:
-      backend:
-        condition: service_healthy
+      - backend
     command: >
       sh -c '
-        echo "Waiting for backend to be ready..."
-        while ! curl -s http://backend:1337/health; do
-          echo "Backend not ready - waiting..."
-          sleep 10
-        done
-        echo "Backend is ready - starting frontend build..."
-        npm run build && npm start
+        echo "Starting frontend..."
+        npm run build && npm start -- -H 0.0.0.0
       '
     networks:
       - app-network
