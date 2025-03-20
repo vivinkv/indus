@@ -34,6 +34,16 @@ module.exports = {
     },
     {
       method: "GET",
+      path: "/blogs/updateContent",
+      handler: "slug.blogContentUpdate",
+      config: {
+        auth: false,
+        policies: [],
+        middleware: [],
+      },
+    },
+    {
+      method: "GET",
       path: "/blogs/:slug",
       handler: "slug.getBlog",
       config: {
@@ -42,6 +52,7 @@ module.exports = {
         middleware: [],
       },
     },
+    
 
   ],
 };
