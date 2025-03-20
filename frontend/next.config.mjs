@@ -1,14 +1,9 @@
+{import('next').NextConfig} 
 const nextConfig = {
+  reactStrictMode: false,
   images: {
-    domains: [
-      'localhost',
-      'backend', // Add Docker service name
-      'indususedcars.com',
-      process.env.NEXT_PUBLIC_DOMAIN?.replace('http://', '').replace('https://', '') // Handle dynamic domain
-    ].filter(Boolean), // Filter out undefined values
-  
+    domains: ['indus-usedcars.onrender.com',"tv.indusmis.in","intuitive-birds-3956e5f025.strapiapp.com","intuitive-birds-3956e5f025.media.strapiapp.com","popular-freedom-97a988dfe2.strapiapp.com","popular-freedom-97a988dfe2.media.strapiapp.com","complete-breeze-5393cb73b4.media.strapiapp.com","complete-breeze-5393cb73b4.strapiapp.com"],
   },
- 
 };
 
 export default nextConfig;

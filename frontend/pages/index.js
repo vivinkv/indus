@@ -77,10 +77,15 @@ export default function Home({ menu, data, moments, cta, outlets }) {
 export async function getStaticProps() {
   try {
     const menu = await MenuApi.menu(Params)
+    console.log('menu')
     const data = await HomeApi.index()
+    console.log('data')
     const moments = await widgetsApi.moments()
+    console.log('moments')
     const cta = await widgetsApi.cta()
+    console.log('cta')
     const outlets = await HomeApi.outlets({pageSize:6})
+    console.log('outlets')
     return {
       props: {
         menu: menu?.data?.data,
@@ -95,11 +100,11 @@ export async function getStaticProps() {
     console.error('Error fetching header data index:', error);
 
     return {
+      notFound:true,
+      revalidate: 10,
       props: {
         header: null, // or handle the error in a way that makes sense for your application
       },
-      revalidate: 10,
-      notFound:true
     };
   }
 }

@@ -141,14 +141,14 @@ module.exports = {
                 }
               } else {
                 // Update the Slug if the model already exists
-                // await strapi
-                //   .documents("api::combination-page.combination-page")
-                //   .update({
-                //     documentId: existingModel.documentId,
-                //     data: {
-                //       Slug: slug,
-                //     },
-                //   });
+                await strapi
+                  .documents("api::combination-page.combination-page")
+                  .update({
+                    documentId: existingModel.documentId,
+                    data: {
+                      Slug: slug,
+                    },
+                  });
                 const extractSlug = model?.slug?.startsWith('used') ? model?.slug?.split('-') : null;
                 if (extractSlug?.length == 3) {
                   const locationSlug = model?.slug?.split('-')[2];
