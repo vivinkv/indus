@@ -30,7 +30,10 @@
       "enum": [
         "Buy",
         "Sell",
-        "Book"
+        "Book",
+        "Contact",
+        "Test Drive",
+        "Request Callback"
       ]
     },
     "Date": {
@@ -55,6 +58,9 @@
     },
     "SourceURL": {
       "type": "string"
+    },
+    "Car": {
+      "type": "json"
     }
   }
 }

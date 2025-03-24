@@ -1,5 +1,4 @@
 const axios = require("axios");
-
 ("use strict");
 
 /**
@@ -361,7 +360,7 @@ module.exports = {
     try {
       console.log('working');
 
-      const { start = 0, limit = 10 } = ctx.query;
+      const { start = 1, limit = 10 } = ctx.query;
 
       // Get total count of blogs
       const total = await strapi.documents("api::blog.blog").count();
@@ -448,106 +447,5 @@ module.exports = {
         details: err.message,
       };
     }
-  },
-  blogContentUpdate: async (ctx, next) => {
-    try {
-      console.log("Processing blog content images");
-      const blogs = await strapi.documents("api::blog.blog").findMany({
-        populate: "*"
-      });
-
-      const imageUrlRegex = /<img[^>]+src="([^"]+)"/g;
-      const failedUpdates = [];
-
-      for (const blog of blogs) {
-        if (!blog.Content) continue;
-
-        let content = blog.Content;
-        let match;
-        let contentUpdated = false;
-
-        while ((match = imageUrlRegex.exec(blog.Content)) !== null) {
-          const imageUrl = match[1];
-          if (!imageUrl.startsWith('http')) continue;
-
-          try {
-            // Properly encode the URL to handle spaces and special characters
-            const encodedUrl = encodeURI(imageUrl);
-            const response = await axios.get(encodedUrl, {
-              responseType: "arraybuffer"
-            });
-
-            const formData = new FormData();
-            const blob = new Blob([response.data], {
-              type: response.headers["content-type"]
-            });
-            formData.append("files", blob, `content_image_${Date.now()}.jpg`);
-
-            const strapiUrl = process.env.STRAPI_URL || "http://strapi:1337";
-            const uploadResponse = await axios.post(
-              `${strapiUrl}/api/upload`,
-              formData,
-              {
-                headers: {
-                  "Content-Type": "multipart/form-data"
-                },
-                timeout: 30000,
-                maxContentLength: Infinity,
-                maxBodyLength: Infinity
-              }
-            );
-
-            if (uploadResponse.data[0]?.url) {
-              content = content.replace(imageUrl, uploadResponse.data[0].url);
-              contentUpdated = true;
-            }
-          } catch (error) {
-            console.error(`Error processing image ${imageUrl}:`, error);
-            failedUpdates.push({
-              blogId: blog.documentId,
-              imageUrl,
-              error: error.message
-            });
-          }
-        }
-
-        if (contentUpdated) {
-          try {
-            await strapi.documents("api::blog.blog").update({
-              documentId: blog.documentId,
-              data: { Content: content },
-              status: 'published'
-            });
-            console.log(`Updated content for blog ${blog.documentId}`);
-          } catch (error) {
-            console.error(`Error updating blog ${blog.documentId}:`, error);
-            failedUpdates.push({
-              blogId: blog.documentId,
-              error: error.message
-            });
-          }
-        }
-      }
-
-      if (failedUpdates.length > 0) {
-        console.log("Failed updates:", failedUpdates);
-      }
-
-      ctx.status = 200;
-      ctx.body = {
-        data: {
-          success: true,
-          msg: "Content images processed successfully",
-          failedUpdates
-        }
-      };
-    } catch (err) {
-      console.error("Error in blogContentUpdate:", err);
-      ctx.status = 500;
-      ctx.body = {
-        error: "Internal Server Error",
-        details: err.message
-      };
-    }
-  },
+  }
 }

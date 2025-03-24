@@ -10,7 +10,8 @@ module.exports = {
             policies: [],
             middleware: []
         }
-    }, {
+    },
+    {
         method: 'GET',
         path: '/outlets/featured',
         handler: 'outletslist.featuredOutletList',
@@ -19,5 +20,6 @@ module.exports = {
             policies: [],
             middleware: []
         }
-    }]
+    }
+    ]
 }

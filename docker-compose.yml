@@ -52,6 +52,8 @@ services:
       API_PASSWORD: ${API_PASSWORD}
       STRAPI_URL: ${STRAPI_URL}
       BACKEND_URL: ${BACKEND_URL}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
     volumes:
       - ./backend/public/uploads:/app/public/uploads  # Persistent media storage
     ports:

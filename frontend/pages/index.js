@@ -77,15 +77,10 @@ export default function Home({ menu, data, moments, cta, outlets }) {
 export async function getStaticProps() {
   try {
     const menu = await MenuApi.menu(Params)
-    console.log('menu')
     const data = await HomeApi.index()
-    console.log('data')
     const moments = await widgetsApi.moments()
-    console.log('moments')
     const cta = await widgetsApi.cta()
-    console.log('cta')
-    const outlets = await HomeApi.outlets({pageSize:6})
-    console.log('outlets')
+    const outlets = await HomeApi.featuredOutlets({pageSize:6})
     return {
       props: {
         menu: menu?.data?.data,

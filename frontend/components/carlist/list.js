@@ -356,7 +356,9 @@ const List = ({
 
             return updatedBrands
         })
-        handleModelWithBrand(item)
+        setTimeout(() => {
+            handleModelWithBrand(item)
+        }, 2);
     }
 
     const [selectedTransmission, setSelectedTransmission] = useState(
@@ -444,6 +446,11 @@ const List = ({
         setrsValues([RSMIN, RSMAX])
     }
 
+
+    const handleContactNavigate=(url)=>{
+        router.push(url)
+    }
+
     const [loadMoreLoading, setloadMoreLoading] = useState(false)
     const [loading, setLoading] = useState(false)
     const [page, setpage] = useState(1)
@@ -469,6 +476,7 @@ const List = ({
         }
         const response = await action({
             location,
+            high:false,
             fuel: `[${selectedFuels?.join(',')}]`,
             brand: `[${selectedBrands?.join(',')}]`,
             model: `[${selectedModels?.join(',')}]`,
@@ -527,7 +535,7 @@ const List = ({
     return (
         <>
 
-            <EnquiryModal open={enquiryOpen} setOpen={setEnquiryOpen} />
+            <EnquiryModal open={enquiryOpen} setOpen={setEnquiryOpen} callBack={true} />
 
             <FilterModal
                 setmobileFilterKey={setmobileFilterKey}
@@ -767,12 +775,16 @@ const List = ({
 
 
                                 </div>
-                                <div>
-                                    <button onClick={handleIsFilterClear} className='text-black'>
-                                        {' '}
-                                        Clear
-                                    </button>
-                                </div>
+
+                                {
+                                    ((router?.asPath != '/cars' && !router.asPath.includes('location=') || router.asPath.includes('location=') && router.asPath.includes('&'))) &&
+                                    <div>
+                                        <button onClick={handleIsFilterClear} className='text-black'>
+                                            {' '}
+                                            Clear
+                                        </button>
+                                    </div>
+                                }
                             </div>
 
                             {loading ? (
@@ -840,7 +852,7 @@ const List = ({
 
                             <div className='hidden md:grid grid-cols-1 lg:grid-cols-2 gap-[17px] mt-[42px] '>
                                 {data?.Assurance_Section && (
-                                    <div>
+                                    <Link href={data?.Assurance_Section?.URL || '/contact'} >
                                         <div className='benefits'>
                                             <Image
                                                 src={benefits2}
@@ -867,10 +879,10 @@ const List = ({
                                                 </Link>
                                             </div>
                                         </div>
-                                    </div>
+                                    </Link>
                                 )}
                                 {data?.Benefit_Section && (
-                                    <div>
+                                    <Link href={data?.Benefit_Section?.URL || '/contact'} >
                                         <div className='benefits benefits2'>
                                             <Image
                                                 src={benefits3}
@@ -896,13 +908,13 @@ const List = ({
                                                 </Link>
                                             </div>
                                         </div>
-                                    </div>
+                                    </Link>
                                 )}
                             </div>
 
                             <div className='md:hidden w-full list_ads  mt-[42px]'>
                                 <Slider {...buysettings}>
-                                    <div>
+                                    <div onClick={()=>handleContactNavigate(data?.Assurance_Section?.URL)}>
                                         <div className='benefits mr-[12px]'>
                                             <Image
                                                 src={benefits2}
@@ -933,7 +945,7 @@ const List = ({
                                     </div>
 
                                     <div>
-                                        <div className='benefits benefits2 mr-[12px]'>
+                                        <div onClick={()=>handleContactNavigate(data?.Benefit_Section?.URL)} className='benefits benefits2 mr-[12px]'>
                                             <Image
                                                 src={benefits3}
                                                 alt=''

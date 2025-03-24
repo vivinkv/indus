@@ -10,7 +10,7 @@ import logo from '../../public/logo.svg';
 import car from '../../public/modalcar.png';
 import car2 from '../../public/popup.gif';
 
-const EnquiryModal = ({ open, setOpen, title, book }) => {
+const EnquiryModal = ({ open, setOpen, title, book, documentId, callBack }) => {
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
     const { executeRecaptcha } = useGoogleReCaptcha();
     const router = useRouter();
@@ -29,9 +29,9 @@ const EnquiryModal = ({ open, setOpen, title, book }) => {
     }
 
     const pageUrl =
-    typeof window !== 'undefined'
-        ? window.location.origin + router.asPath
-        : '';
+        typeof window !== 'undefined'
+            ? window.location.origin + router.asPath
+            : '';
 
     const onSubmit = async (details) => {
         setLoading(true);
@@ -48,10 +48,13 @@ const EnquiryModal = ({ open, setOpen, title, book }) => {
             name: details?.name,
             phone_number: details?.phone,
             city: details?.location,
-            lead_type: book?'Home_Book':'Sell',
+            lead_type: book ? 'Book' : documentId ? 'Test Drive' : callBack ? 'Request Callback' : 'Sell',
             recaptcha_token: token,
-            source_url:pageUrl
+            source_url: pageUrl,
+            ...(documentId ? { car_id: documentId } : {})
         };
+
+        // console.log(dataToSubmit)
 
         try {
             await ContactApi.save(dataToSubmit);

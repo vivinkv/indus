@@ -17,6 +17,8 @@ import Link from 'next/link';
 
 const Showroom = ({ data }) => {
 
+  const keralaShowroom = data?.filter(obj => obj?.Location !== (undefined || null));
+
   const settings = {
     dots: false,
     arrows: true,
@@ -73,22 +75,22 @@ const Showroom = ({ data }) => {
 
         <div className='showroom-title flex items-center justify-between'>
           <h4>  Showrooms Across Kerala </h4>
-
         </div>
 
 
         <div className='showroom-slider'>
           <Slider {...settings}>
-
             {
               data?.map((obj, index) => (
-                <div key={index}>
-                  <div className='show_list' style={{ backgroundColor: backgroundColor(index) }}>
-                    <h5>{obj?.Name}</h5>
-                    <Image src={obj?.Image?.url ? ImageUrl(obj?.Image?.url) : shPlaceholder} alt='' width={138} height={125} />
-                    <h4>{Math.floor(obj?.carCount / 10) * 10}+ Cars</h4>
+                <Link href={`/dealers/${obj?.Slug}`}>
+                  <div key={index}>
+                    <div className='show_list' style={{ backgroundColor: backgroundColor(index) }}>
+                      <h5>{obj?.Name}</h5>
+                      <Image src={obj?.Image?.url ? ImageUrl(obj?.Image?.url) : shPlaceholder} alt='' width={138} height={125} />
+                      <h4>{Math.floor(obj?.carCount / 10) * 10}+ Cars</h4>
+                    </div>
                   </div>
-                </div>
+                </Link>
               ))
             }
 

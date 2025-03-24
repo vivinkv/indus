@@ -151,7 +151,7 @@ const Details = ({ detail }) => {
   };
   return (
     <>
-      <EnquiryModal open={open} setOpen={setOpen} />
+      <EnquiryModal open={open} setOpen={setOpen} documentId={detail?.documentId}  />
 
       <section className="detail-sec">
         <div className="container">
@@ -248,7 +248,7 @@ const Details = ({ detail }) => {
                   <User2Icon />
                   {detail?.Owner_Type}
                 </p>
-               
+
                 {
                   detail?.Home_Test_Drive &&
                   <p className="flex items-center gap-[8px]">
@@ -256,10 +256,14 @@ const Details = ({ detail }) => {
                   </p>
                 }
 
-                {detail?.Amount && (
+                {detail?.PSP && (
                   <h4 className="flex items-center gap-[5px]">
                     <Price2Icon />
-                    {detail?.Amount}
+                    {detail?.PSP >= 100000
+                      ? `${(detail?.PSP / 100000).toFixed(2)} Lakh`
+                      : `${detail?.PSP}`
+                      // : `${(detail?.PSP / 1000).toFixed(2)} Thousand`
+                    }
                   </h4>
                 )}
                 <h5>Fixed on road price : {detail?.PSP}</h5>
@@ -509,12 +513,16 @@ const Details = ({ detail }) => {
                   </p>
                 }
 
-                {detail?.Amount && (
+                {detail?.PSP && (
                   <h4 className="flex items-center gap-[5px]">
-                    <Price2Icon /> {detail?.Amount}
+                    <Price2Icon /> {detail?.PSP >= 100000
+                      ? `${(detail?.PSP / 100000).toFixed(2)} Lakh`
+                      : `${detail?.PSP}`
+                      // : `${(detail?.PSP / 1000).toFixed(2)} Thousand`
+                    }
                   </h4>
                 )}
-                <h5>Fixed on road price :  {detail?.PSP}</h5>
+                <h5>Fixed on road price</h5>
                 <a className="btn cursor-pointer" onClick={handleOpen}>
                   {detail?.content?.Button?.Label}
                 </a>

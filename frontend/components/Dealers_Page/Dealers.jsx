@@ -9,6 +9,7 @@ import { DealerApi } from '@/Datas/Endpoints/Dealers';
 import noDealers from '../../public/no_result_found.png';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import DealerLoading from '../Common/dealerLoading';
 
 
 const customStyles = {
@@ -72,7 +73,14 @@ const Dealers = ({ data, outlets, locations }) => {
 
     const [tableLoading, settableLoading] = useState(false)
     const handleLocationChange = (item) => {
-        setSelectedOption(item)
+        if (item) {
+            setSelectedOption(item)
+        } else {
+            setlocationCancelLoading(true)
+            const url = new URL(window.location.href)
+            url.searchParams.delete('location')
+            router.replace(url.pathname + url.search, undefined, { shallow: true })
+        }
     }
 
 
@@ -88,15 +96,20 @@ const Dealers = ({ data, outlets, locations }) => {
             url.searchParams.set('location', selectedOption?.value)
         } else {
             url.searchParams.delete('location')
-            fetchDealers()
         }
         router.replace(url.pathname + url.search, undefined, { shallow: true })
     }
 
+    const [locationCancelLoading, setlocationCancelLoading] = useState(false)
     const fetchDealers = async (value) => {
-        const response = await DealerApi.list({ limit: 50, location: value || selectedOption?.value })
+        let location_value = ''
+        if (value != "no_location") {
+            location_value = value || selectedOption?.value
+        }
+        const response = await DealerApi.list({ limit: 50, location: location_value })
         setDealers(response?.data)
         setButtonLoading(false)
+        setlocationCancelLoading(false)
     }
 
     useEffect(() => {
@@ -104,6 +117,9 @@ const Dealers = ({ data, outlets, locations }) => {
             const findLocation = options?.find((pre => pre?.value == location))
             fetchDealers(location)
             setSelectedOption(findLocation)
+        } else {
+
+            fetchDealers('no_location')
         }
     }, [location])
 
@@ -136,7 +152,7 @@ const Dealers = ({ data, outlets, locations }) => {
                     <div className='mt-5 w-full md:w-[50%] lg:w-[32%] gap-3 flex flex-col items-center'>
                         <div className=' w-full '>
                             <Select
-                                key={selectedOption?.value || location}
+                                key={selectedOption || location}
                                 className='w-full text-black'
                                 styles={customStyles}
                                 isClearable
@@ -160,14 +176,14 @@ const Dealers = ({ data, outlets, locations }) => {
                 </div>
             </div>
 
-            <div className=' py-10 gap-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'>
-                {
-                    dealers?.data?.length > 0 &&
-                    dealers?.data?.map((obj, index) => (
-                        <Dealer_Item key={index} data={obj} />
-                    ))
-                }
-
+            <div className='py-10 gap-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'>
+                {locationCancelLoading ? (
+                    Array.from({ length: 8 }).map((_, index) => <DealerLoading key={index} />)
+                ) : (
+                    dealers?.data?.length > 0 && (
+                        dealers?.data?.map((obj, index) => <Dealer_Item key={index} data={obj} />)
+                    )
+                )}
             </div>
             {
                 dealers?.data?.length == 0 &&

@@ -101,19 +101,19 @@ const Footer = ({ general, hideFooter, bottomDescription }) => {
                               <div className='flex items-center md:justify-center gap-[15px] foot_social'>
                                  {
                                     socialLinks?.Facebook_URL &&
-                                    <Link href={socialLinks?.Facebook_URL || '#'}><FaceIcon /></Link>
+                                    <Link target='_blank' href={socialLinks?.Facebook_URL || '#'}><FaceIcon /></Link>
                                  }
                                  {
                                     socialLinks?.Instagram_URL &&
-                                    <Link href={socialLinks?.Instagram_URL || '#'}><InstaIcon /></Link>
+                                    <Link target='_blank' href={socialLinks?.Instagram_URL || '#'}><InstaIcon /></Link>
                                  }
                                  {
                                     socialLinks?.Twitter_URL &&
-                                    <Link href={socialLinks?.Twitter_URL || '#'}><TwittIcon /></Link>
+                                    <Link target='_blank' href={socialLinks?.Twitter_URL || '#'}><TwittIcon /></Link>
                                  }
                                  {
                                     socialLinks?.Youtube_URL &&
-                                    <Link href={socialLinks?.Youtube_URL || '#'}><YouIcon /></Link>
+                                    <Link target='_blank' href={socialLinks?.Youtube_URL || '#'}><YouIcon /></Link>
                                  }
                               </div>
                            </div>

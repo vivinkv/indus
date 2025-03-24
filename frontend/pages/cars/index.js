@@ -15,7 +15,7 @@ import { HomeApi } from "@/Datas/Endpoints/Home";
 
 
 
-export default function CarIndex({ menu, filters, brands, cta, formContent, outlets, content,models }) {
+export default function CarIndex({ menu, filters, brands, cta, formContent, outlets, content, models }) {
 
   const [data, setdata] = useState(content)
 
@@ -54,7 +54,7 @@ export async function getStaticProps() {
     const models = await FilterApi.models()
     const cta = await widgetsApi.cta()
     const formContent = await ContactApi.excellenceForm()
-    const outlets = await HomeApi.outlets({ location: '', pageSize: 6 })
+    const outlets = await HomeApi.featuredOutlets({ pageSize: 10 })
     const data = await FilterApi.locationData()
 
     return {
@@ -66,7 +66,7 @@ export async function getStaticProps() {
         formContent: formContent?.data,
         outlets: outlets?.data,
         content: data?.data,
-        models:models?.data
+        models: models?.data
       },
       revalidate: 10,
     };

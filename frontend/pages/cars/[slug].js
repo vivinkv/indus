@@ -11,6 +11,9 @@ import { widgetsApi } from "@/Datas/Endpoints/Widgets";
 
 
 export default function Car({ menu, data, detail, cta, moments }) {
+
+  // console.log(detail)
+
   return (
     <Base menu={menu} meta={data?.data?.SEO} bottomDescription={data?.data?.Bottom_Description} >
 

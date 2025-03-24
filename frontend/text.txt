@@ -12,3 +12,6 @@ NEXT_PUBLIC_API_BASE_PATH="https://complete-breeze-5393cb73b4.strapiapp.com/api/
 NEXT_PUBLIC_DOMAIN="https://complete-breeze-5393cb73b4.strapiapp.com"
 NEXT_PUBLIC_RECAPTCHA_SITEKEY="6Lfz19YqAAAAAMk66MrPE1cXfLRFW9FszdqjjPXy"
 NEXT_PUBLIC_RECAPTCHA_SECRETKEY="6Lfz19YqAAAAAMTs4R_24TLagj64IIH0WH7wDo-m"
+
+live by liith
+.
