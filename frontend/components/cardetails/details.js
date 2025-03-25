@@ -28,6 +28,8 @@ import Link from "next/link";
 
 const Details = ({ detail }) => {
 
+  // console.log(detail)
+
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
@@ -151,7 +153,7 @@ const Details = ({ detail }) => {
   };
   return (
     <>
-      <EnquiryModal open={open} setOpen={setOpen} documentId={detail?.documentId}  />
+      <EnquiryModal open={open} setOpen={setOpen} documentId={detail?.documentId} />
 
       <section className="detail-sec">
         <div className="container">
@@ -574,7 +576,7 @@ const Details = ({ detail }) => {
             <div className="md:flex items-center justify-between md:mb-[45px]">
               {
                 detail?.Find_More?.map((data, index) => (
-                  <Link key={index} href={`/buy/${data?.Combination?.Slug}`} className="flex items-center gap-[15px] justify-between find-list w-full md:max-w-[332px]">
+                  <Link key={index} href={`/buy/${data?.Link?.Slug}`} className="flex items-center gap-[15px] justify-between find-list w-full md:max-w-[332px]">
 
                     <div className="flex items-center gap-[15px]">
                       <span className="flex items-center justify-center">
@@ -583,7 +585,7 @@ const Details = ({ detail }) => {
                       </span>
                       <div>
                         <h4>{data?.Title}</h4>
-                        <h5>{data?.Content}</h5>
+                        <h5>{data?.Link?.Page_Heading || data?.Content}</h5>
                       </div>
                     </div>
                     <Find7Icon />

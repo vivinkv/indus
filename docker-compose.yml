@@ -54,6 +54,8 @@ services:
       BACKEND_URL: ${BACKEND_URL}
       SMTP_USERNAME: ${SMTP_USERNAME}
       SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_DEFAULT_NAME: ${SMTP_DEFAULT_NAME}
+      RECAPTCHA_SECRECT_KEY: ${RECAPTCHA_SECRECT_KEY}
     volumes:
       - ./backend/public/uploads:/app/public/uploads  # Persistent media storage
     ports:

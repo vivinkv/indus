@@ -82,7 +82,8 @@ function OtherBlogs({ data, sectionHeading }) {
                   alt=""
                   className="w-full object-cover h-[150px] md:h-[200px] lg:h-[300px]  rounded-[8px]"
                 />
-                <p className="text-[14px] mt-[5px] text-stone-400">{moment(data?.publishedAt).format("DD MMMM YYYY")}</p>
+                {/* publishedAt */}
+                <p className="text-[14px] mt-[5px] text-stone-400">{moment(data?.createdAt).format("DD MMMM YYYY")}</p>
                 <h4 className="text-[24px]  text-black mt-[10px] leading-[28px]">
                   {data?.Title}
                 </h4>

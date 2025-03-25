@@ -23,6 +23,8 @@ import { CarsApi } from '@/Datas/Endpoints/Cars';
 import EnquiryModal from '../Common/modal';
 import RemoveStyleAttributes from '@/Common/removeStyleAttribute';
 import SelectedChip from '../Common/selectedChip'
+import TopClearButton from './topClearButton'
+import ResetFilterButton from './resetFilterButton'
 
 
 
@@ -447,7 +449,7 @@ const List = ({
     }
 
 
-    const handleContactNavigate=(url)=>{
+    const handleContactNavigate = (url) => {
         router.push(url)
     }
 
@@ -476,7 +478,7 @@ const List = ({
         }
         const response = await action({
             location,
-            high:false,
+            high: false,
             fuel: `[${selectedFuels?.join(',')}]`,
             brand: `[${selectedBrands?.join(',')}]`,
             model: `[${selectedModels?.join(',')}]`,
@@ -777,13 +779,20 @@ const List = ({
                                 </div>
 
                                 {
-                                    ((router?.asPath != '/cars' && !router.asPath.includes('location=') || router.asPath.includes('location=') && router.asPath.includes('&'))) &&
-                                    <div>
-                                        <button onClick={handleIsFilterClear} className='text-black'>
-                                            {' '}
-                                            Clear
-                                        </button>
-                                    </div>
+                                    router?.pathname != "/buy/[slug]" &&
+                                    ((router?.asPath != '/cars' && !router.asPath.includes('location=') || (router.asPath.includes('location=') && router.asPath.includes('&')))) &&
+
+                                    <TopClearButton handleIsFilterClear={handleIsFilterClear} />
+                                    // <div>
+                                    //     <button onClick={handleIsFilterClear} className='text-black'>
+                                    //         {' '}
+                                    //         Clear
+                                    //     </button>
+                                    // </div>
+                                }
+                                {
+                                    router?.pathname == "/buy/[slug]" && router.asPath.includes('?') &&
+                                    <TopClearButton handleIsFilterClear={handleIsFilterClear} />
                                 }
                             </div>
 
@@ -804,8 +813,19 @@ const List = ({
                                             <Image src={nofound} width={500} height={400} />
 
                                             <p>No match found for your search</p>
+                                            {
+                                                router?.pathname != "/buy/[slug]" &&
+                                                ((router?.asPath != '/cars' && !router.asPath.includes('location=') || (router.asPath.includes('location=') && router.asPath.includes('&')))) &&
+                                                <ResetFilterButton handleIsFilterClear={handleIsFilterClear} />
+                                            }
 
-                                            <a onClick={handleIsFilterClear} className='btn cursor-pointer'>Reset Filter</a>
+                                            {
+                                                router?.pathname == "/buy/[slug]" && router.asPath.includes('?') &&
+                                                <ResetFilterButton handleIsFilterClear={handleIsFilterClear} />
+                                            }
+
+
+                                            {/* <a onClick={handleIsFilterClear} className='btn cursor-pointer'>Reset Filter</a> */}
                                         </div>
                                     )}
                                     <div className='grid md:grid-cols-2 xl:grid-cols-3 gap-[30px]'>
@@ -914,7 +934,7 @@ const List = ({
 
                             <div className='md:hidden w-full list_ads  mt-[42px]'>
                                 <Slider {...buysettings}>
-                                    <div onClick={()=>handleContactNavigate(data?.Assurance_Section?.URL)}>
+                                    <div onClick={() => handleContactNavigate(data?.Assurance_Section?.URL)}>
                                         <div className='benefits mr-[12px]'>
                                             <Image
                                                 src={benefits2}
@@ -945,7 +965,7 @@ const List = ({
                                     </div>
 
                                     <div>
-                                        <div onClick={()=>handleContactNavigate(data?.Benefit_Section?.URL)} className='benefits benefits2 mr-[12px]'>
+                                        <div onClick={() => handleContactNavigate(data?.Benefit_Section?.URL)} className='benefits benefits2 mr-[12px]'>
                                             <Image
                                                 src={benefits3}
                                                 alt=''

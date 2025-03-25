@@ -935,7 +935,8 @@ a.no-border {
 .count-left .btn {
   border-radius: 100px;
   border: 0.8px solid #fff;
-  width: 159px;
+  /* width: 159px; */
+  width: 171px;
   height: 40px;
   padding: 12px 25px 13px 25px;
   color: #bababa;

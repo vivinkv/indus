@@ -14,6 +14,8 @@ import { BlogApi } from '@/Datas/Endpoints/blog'
 
 function Blog({ menu, data, cta, blog }) {
 
+  console.log(data)
+
   return (
     <Base menu={menu} meta={data?.data?.SEO} bottomDescription={data?.data?.Bottom_Description}  >
       <Banner data={data?.data?.Banner_Section} />      <div className='lg:px-[25px] md:px-[15px] px-[10px]'>
