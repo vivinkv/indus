@@ -30,9 +30,6 @@ module.exports = {
           Author: {
             populate: "*",
           },
-          Categories:{
-            populate:'*'
-          }
         },
       });
 
@@ -53,122 +50,87 @@ module.exports = {
       console.log("blog running");
       // Helper function to upload image using Strapi's upload API
       const uploadImage = async (filePath) => {
-        if (!filePath) {
-          console.warn('No file path provided for upload');
-          return null;
-        }
-
+        console.log({imagePath:filePath});
+        
+        
         try {
           // Trim and encode file path
           const cleanedPath = filePath?.trim().replaceAll(/ /g, '%20');
-          if (!cleanedPath) {
-            console.warn('Invalid file path after cleaning');
-            return null;
-          }
+          if (!cleanedPath) return null;
 
           // Generate a unique filename with timestamp and random string
           const uniqueId = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
           const fileName = `image_${uniqueId}.jpg`;
 
-          try {
-            // Check if file with same name exists in Strapi media library
-            const existingFiles = await strapi.plugins.upload.services.upload.findMany({
-              filters: { name: fileName }
-            });
-            if (existingFiles.length > 0) {
-              console.log(`Using existing file: ${fileName}`);
-              return existingFiles[0].id;
-            }
-          } catch (error) {
-            console.error('Error checking existing files:', error);
-            return null;
+          // Check if file with same name exists in Strapi media library
+          const existingFiles = await strapi.plugins.upload.services.upload.findMany({
+            filters: { name: fileName }
+          });
+          if (existingFiles.length > 0) {
+            return existingFiles[0].id;
           }
 
-          // Fetch image with retry mechanism and timeout
-          const fetchWithRetry = async (retries = 3, delay = 2000) => {
-            for (let attempt = 1; attempt <= retries; attempt++) {
-              try {
-                const response = await axios.get(
-                  `https://indususedcars.com/${cleanedPath}`,
-                  { 
-                    responseType: "arraybuffer", 
-                    timeout: 30000,
-                    maxContentLength: 10 * 1024 * 1024 // 10MB limit
-                  }
-                );
-                return response;
-              } catch (error) {
-                console.error(`Attempt ${attempt}/${retries} failed:`, error.message);
-                if (attempt < retries) {
-                  await new Promise(resolve => setTimeout(resolve, delay));
-                }
-              }
+          // Fetch image with retry mechanism
+          const fetchWithRetry = async (retries = 1) => {
+            console.log('yes inside');
+            
+            try {
+              return await axios.get(
+                `https://indususedcars.com/${cleanedPath}`,
+                { responseType: "arraybuffer", timeout: 30000 }
+              );
+            } catch (error) {
+              // if (retries > 0) {
+              //   await new Promise(resolve => setTimeout(resolve, 2000));
+              //   return fetchWithRetry(retries - 1);
+              // }
+              console.error(`Failed to download image from ${cleanedPath}:`, error.message);
+              return null;
             }
-            throw new Error(`Failed to download image after ${retries} attempts`);
           };
 
-          let response;
-          try {
-            response = await fetchWithRetry();
-          } catch (error) {
-            console.error(`Failed to download image from ${cleanedPath}:`, error.message);
-            return null;
-          }
+          const response = await fetchWithRetry();
 
-          // Create FormData with error handling
-          try {
-            const formData = new FormData();
-            const blob = new Blob([response.data], {
-              type: response.headers["content-type"] || 'image/jpeg'
-            });
-            formData.append("files", blob, fileName);
+          // Create FormData for Strapi upload
+          const formData = new FormData();
+          const blob = new Blob([response.data], {
+            type: response.headers["content-type"],
+          });
+          formData.append("files", blob, fileName);
 
-            // Upload to Strapi with timeout and retry
-            const uploadWithRetry = async (retries = 3, delay = 2000) => {
-              for (let attempt = 1; attempt <= retries; attempt++) {
-                try {
-                  const uploadResponse = await axios.post(
-                    `${process.env.STRAPI_URL || "http://localhost:1337"}/api/upload`,
-                    formData,
-                    {
-                      headers: { "Content-Type": "multipart/form-data" },
-                      timeout: 30000
-                    }
-                  );
-                  return uploadResponse.data[0]?.id || null;
-                } catch (error) {
-                  console.error(`Upload attempt ${attempt}/${retries} failed:`, error.message);
-                  if (attempt < retries && (error.code === 'EBUSY' || error.code === 'ENOENT')) {
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    continue;
-                  }
-                  throw error;
+          // Upload to Strapi with timeout and retry on EBUSY
+          const uploadWithRetry = async (retries = 3) => {
+            try {
+              const uploadResponse = await axios.post(
+                `${process.env.STRAPI_URL || "http://localhost:1337"}/api/upload`,
+                formData,
+                {
+                  headers: { "Content-Type": "multipart/form-data" },
+                  timeout: 30000
                 }
+              );
+              return uploadResponse.data[0]?.id || null;
+            } catch (error) {
+              if ((error.code === 'EBUSY' || error.code === 'ENOENT') && retries > 0) {
+                // await new Promise(resolve => setTimeout(resolve, 10000));
+                // return uploadWithRetry(retries - 1);
+                return null;
               }
-              return null;
-            };
-
-            // Add delay before upload
-            await new Promise(resolve => setTimeout(resolve, 500));
-            const result = await uploadWithRetry();
-
-            // Cleanup
-            if (global.gc) {
-              try {
-                global.gc();
-              } catch (error) {
-                console.warn('Garbage collection failed:', error);
-              }
+              // throw error;
             }
+          };
 
-            return result;
-          } catch (error) {
-            console.error('Error in upload process:', error);
-            return null;
-          }
+          // Add delay before upload to ensure temp file is ready
+          await new Promise(resolve => setTimeout(resolve, 500));
+          const result = await uploadWithRetry();
+
+          // Cleanup any temporary files
+          if (global.gc) global.gc();
+
+          return result;
         } catch (error) {
-          console.error("Error in image processing:", error);
-          return null;
+          console.error("Error uploading image:", error);
+          return { error: true, message: error.message, filePath };
         }
       };
 
@@ -568,9 +530,6 @@ module.exports = {
           Author: {
             populate: "*",
           },
-           Categories:{
-            populate:'*'
-          }
         },
       });
 

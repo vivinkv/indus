@@ -9,19 +9,21 @@ module.exports = () => ({
     config: {
       provider: 'nodemailer',
       providerOptions: {
-        service: 'smtp.gmail.com',
+        host: 'smtp.gmail.com',
         port: 587,
         auth: {
           user: process.env.SMTP_USERNAME,
           pass: process.env.SMTP_PASSWORD
         },
-        secure:true
+        secure: false,
+        tls: {
+          rejectUnauthorized: false
+        }
       },
-      // settings: {
-      //   defaultFrom: process.env.SMTP_USERNAME,
-      //   defaultReplyTo: process.env.SMTP_USERNAME,
-      //   response_email: ''
-      // }
+      settings: {
+        defaultFrom: process.env.SMTP_USERNAME,
+        defaultReplyTo: process.env.SMTP_USERNAME
+      }
     }
   },
   // 'strapi5-excel-export': {
