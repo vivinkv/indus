@@ -27,19 +27,44 @@ module.exports = {
 
       for (const dealer of dealerList) {
         try {
-          console.log('Processing dealer:', dealer?.dealership_name);
+          console.log('Processing dealer:', dealer?.location?.slug);
           const findDealer = await strapi.documents('api::dealer-list.dealer-list').findFirst({
             filters: {
               Slug: dealer?.meta_data?.slug
+            },
+            populate: {
+              Outlet: {
+                populate: '*'
+              },
+              Dealer_Detail: {
+                populate: '*'
+              },
+              Head: {
+                populate: '*'
+              },
+              Manager: {
+                populate: '*'
+              },
+              Additional: {
+                populate: '*'
+              },
+              SEO: {
+                populate: '*'
+              }
             }
           });
 
           if (!findDealer) {
             let outletData = null;
+            console.log({slug:dealer?.location?.slug});
+            
             if (dealer?.location?.slug) {
+              
               const findOutlet = await strapi.documents('api::outlet.outlet').findFirst({
                 filters: {
-                  Slug: dealer?.location?.slug
+                  Slug: {
+                    containsi:dealer?.meta_data?.slug
+                  }
                 },
                 populate: {
                   Location: {
@@ -47,6 +72,9 @@ module.exports = {
                   }
                 }
               });
+
+              console.log({findOutlet,slug:dealer}); 
+              
               if (findOutlet) {
                 outletData = findOutlet;
               }

@@ -422,6 +422,10 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
           preset: 'defaultHtml';
         }
       >;
+    Categories: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::blog-category.blog-category'
+    >;
     Content: Schema.Attribute.RichText &
       Schema.Attribute.CustomField<
         'plugin::ckeditor5.CKEditor',

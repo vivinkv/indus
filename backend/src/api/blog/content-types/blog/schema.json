@@ -78,6 +78,11 @@
     },
     "Primary_Heading": {
       "type": "string"
+    },
+    "Categories": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::blog-category.blog-category"
     }
   }
 }
